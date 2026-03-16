@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>o87 — beyond the possible</title>
+  <meta name="description" content="o87Dev — forging tools at the edge of what's possible." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --void: #04030d;
+      --cyan: #00f2ff;
+      --purple: #c050ff;
+      --gold: #ffcc44;
+      --white: #ecebf8;
+      --muted: rgba(236, 235, 248, 0.42);
+      --ring-glow: rgba(192, 80, 255, 0.6);
+      --transition-card: 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--void);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    #three-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .nebula {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 75% 60% at 10% 70%, rgba(192,80,255,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 90% 20%, rgba(0,242,255,0.1) 0%, transparent 75%),
+        radial-gradient(ellipse 50% 40% at 40% 90%, rgba(255,204,68,0.08) 0%, transparent 80%);
+      mix-blend-mode: screen;
+    }
+
+    .page {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 2rem 8rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-3d {
+      position: relative;
+      width: min(680px, 90vw);
+      margin: 0 auto 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 0 40px rgba(0,242,255,0.15));
+    }
+
+    .logo-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      mix-blend-mode: lighten;
+      animation: logoFloat 6s ease-in-out infinite;
+    }
+
+    .logo-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      animation: logoFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.005); }
+    }
+
+    .caption {
+      text-align: center;
+      opacity: 0;
+      animation: riseIn 0.9s 0.7s ease forwards;
+    }
+
+    .caption-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      background: linear-gradient(135deg, #FF4B1F 0%, #D94A6A 45%, #1040C8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 25px rgba(255,75,31,0.5));
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+    }
+
+    .caption-sub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .caption-tagline {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      color: var(--cyan);
+      text-shadow: 0 0 18px rgba(0,242,255,0.7);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      animation: riseIn 0.9s 1.6s ease forwards, bob 2.8s 2.5s ease-in-out infinite;
+    }
+
+    .scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+    }
+
+    .projects {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 5rem 2rem 8rem;
+    }
+
+    .section-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-shadow: 0 0 14px rgba(0,242,255,0.6);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 3rem;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 1.6rem;
+    }
+
+    .card {
+      --a: 0, 242, 255;
+      position: relative;
+      background: rgba(6, 5, 18, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(var(--a), 0.15);
+      border-radius: 24px;
+      padding: 2.2rem 2rem;
+      overflow: hidden;
+      cursor: default;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s var(--transition-card), transform 0.7s var(--transition-card), border-color 0.3s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 20px 40px -20px rgba(0,0,0,0.8);
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(var(--a), 0.9) 20%, rgba(var(--a), 0.4) 80%, transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; right: -20px;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--a), 0.1), transparent 80%);
+      z-index: 0;
+    }
+
+    .card:hover {
+      border-color: rgba(var(--a), 0.5);
+      background: rgba(var(--a), 0.08);
+      box-shadow: 0 30px 60px -20px rgba(var(--a), 0.3), 0 0 0 1px rgba(var(--a), 0.2) inset;
+      transform: translateY(-6px) scale(1.01) !important;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .purple { --a: 192, 80, 255; }
+    .gold   { --a: 255, 204, 68; }
+
+    .card-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.9rem;
+      position: relative;
+      z-index: 2;
+      letter-spacing: -0.02em;
+    }
+
+    .card-desc {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.7;
+      color: rgba(236,235,248,0.75);
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 40px;
+      border: 1px solid currentColor;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    .live   { color: var(--cyan); }
+    .dev    { color: var(--purple); }
+    .wip    { color: var(--gold); }
+
+    .card-link {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgb(var(--a));
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s, text-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .card-link:hover {
+      opacity: 1;
+      text-shadow: 0 0 14px rgba(var(--a), 0.9);
+    }
+
+    .card-link::after {
+      content: '→';
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+
+    .card-link:hover::after { transform: translateX(4px); }
+
+    /* ══ BRANDING SECTION ══ */
+    .branding {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 2rem 8rem;
+    }
+
+    .branding-intro {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 3rem;
+      letter-spacing: 0.04em;
+    }
+
+    .logo-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .logo-slot {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .logo-slot.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .logo-placeholder {
+      aspect-ratio: 4/3;
+      background: rgba(6, 5, 18, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px dashed rgba(192, 80, 255, 0.25);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .logo-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(192,80,255,0.04), transparent 70%);
+    }
+
+    .logo-placeholder:hover {
+      border-color: rgba(192, 80, 255, 0.5);
+      background: rgba(192, 80, 255, 0.04);
+    }
+
+    /* when an actual logo img is supplied, hide the placeholder text */
+    .logo-placeholder img {
+      max-width: 70%;
+      max-height: 70%;
+      object-fit: contain;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-slot-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      color: rgba(192, 80, 255, 0.45);
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-slot-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(236, 235, 248, 0.2);
+      position: relative;
+      z-index: 2;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      position: relative;
+      z-index: 10;
+      background: rgba(4,3,13,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    footer .glow {
+      color: var(--cyan);
+      text-shadow: 0 0 15px rgba(0,242,255,0.7);
+      font-weight: 500;
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(12px); }
+    }
+
+    @media (max-width: 600px) {
+      .card { padding: 1.8rem 1.5rem; }
+      .caption-title { font-size: 1.8rem; letter-spacing: 0.1em; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="three-canvas"></canvas>
+<div class="nebula"></div>
+
+<div class="page">
+
+  <section class="hero">
+    <div class="logo-3d">
+      <img src="o87-logo.png" alt="o87 logo" class="logo-img"/>
+    </div>
+
+    <div class="caption">
+      <p class="caption-sub">deep space development</p>
+      <p class="caption-tagline">infinite universe &nbsp;—&nbsp; infinite possibilities</p>
+    </div>
+    <div class="scroll-hint">explore</div>
+  </section>
+
+  <section class="projects">
+    <p class="section-label">— live transmissions</p>
+    <h2 class="section-heading">current projects</h2>
+    <div class="grid">
+
+      <div class="card" data-delay="0">
+        <div class="card-num">001 // VOICE AI</div>
+        <h3 class="card-title">TrumpAFi</h3>
+        <p class="card-desc">Satirical AI voice chatbot channeling the 45th president's energy. Custom personality engine with real‑time voice generation.</p>
+        <div class="card-footer">
+          <span class="badge live">Live</span>
+          <a href="https://trumpafi.online" target="_blank" class="card-link">visit</a>
+        </div>
+      </div>
+
+      <div class="card gold" data-delay="1">
+        <div class="card-num">002 // AI ASSISTANT</div>
+        <h3 class="card-title">Munch</h3>
+        <p class="card-desc">Intelligent dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
+        <div class="card-footer">
+          <span class="badge dev">In Dev</span>
+        </div>
+      </div>
+
+      <div class="card purple" data-delay="2">
+        <div class="card-num">003 // SEARCH</div>
+        <h3 class="card-title">Truegle</h3>
+        <p class="card-desc">Next‑gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+      </div>
+
+      <div class="card" data-delay="3">
+        <div class="card-num">004 // MAPS</div>
+        <h3 class="card-title">Truegle Maps</h3>
+        <p class="card-desc">Open‑street based layers with AI‑powered route optimization. Description coming soon.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+      </div>
+
+      <div class="card gold" data-delay="4">
+        <div class="card-num">005 // ???</div>
+        <h3 class="card-title">Whistle Stop</h3>
+        <p class="card-desc">Decentralized micro‑blogging for communities. Concept stage.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+      </div>
+
+      <div class="card purple" data-delay="5">
+        <div class="card-num">006 // ???</div>
+        <h3 class="card-title">Que</h3>
+        <p class="card-desc">Smart queue management for events & venues. Backend ready — needs UI.</p>
+        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+      </div>
+
+      <div class="card" data-delay="6">
+        <div class="card-num">007 // ASTROLOGY</div>
+        <h3 class="card-title">Astrology API</h3>
+        <p class="card-desc">Celestial data API with AI interpretations. For developers & creatives.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+      </div>
+
+      <div class="card gold" data-delay="7">
+        <div class="card-num">008 // ???</div>
+        <h3 class="card-title">Frugle</h3>
+        <p class="card-desc">Price comparison & deal hunter. Scraping layer done.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+      </div>
+
+      <div class="card purple" data-delay="8">
+        <div class="card-num">009 // OSINT</div>
+        <h3 class="card-title">OSINT Tool</h3>
+        <p class="card-desc">Open‑source intelligence gathering. Robust backend — frontend contribution welcome.</p>
+        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="branding">
+    <p class="section-label">— identity systems</p>
+    <h2 class="section-heading">branding & logos</h2>
+    <p class="branding-intro">
+      Crafting visual identities from the ground up — marks that carry weight across every surface, screen, and universe.
+    </p>
+    <div class="logo-showcase">
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">01</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">02</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">03</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">04</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">05</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+      <div class="logo-slot">
+        <div class="logo-placeholder">
+          <span class="logo-slot-num">06</span>
+          <p class="logo-slot-label">Coming Soon</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+    <p>© 2025 <span class="glow">o87Dev</span> &nbsp;·&nbsp; deep space node</p>
+  </footer>
+
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+(function() {
+  const canvas = document.getElementById('three-canvas');
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 1, 28);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+  document.addEventListener('mousemove', (e) => {
+    mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // planet
+  const planetGroup = new THREE.Group();
+  scene.add(planetGroup);
+
+  const planetMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uColor1: { value: new THREE.Color('#0a0818') },
+      uColor2: { value: new THREE.Color('#c050ff') },
+      uColor3: { value: new THREE.Color('#00f2ff') }
+    },
+    vertexShader: `
+      varying vec3 vNormal; varying vec3 vPosition;
+      uniform float uTime;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vPosition = position;
+        vec3 pos = position;
+        float noise = sin(pos.x * 3.0 + uTime * 0.6) * cos(pos.y * 3.0 + uTime * 0.4) * 0.12;
+        pos += normal * noise;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float uTime; uniform vec3 uColor1, uColor2, uColor3;
+      varying vec3 vNormal, vPosition;
+      void main() {
+        float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.2);
+        float pattern = sin(vPosition.x * 7.0 + uTime) * sin(vPosition.y * 7.0 + uTime * 0.8) * 0.5 + 0.5;
+        vec3 color = mix(uColor1, uColor2, pattern * 0.5);
+        color = mix(color, uColor3, fresnel * 0.6);
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `
+  });
+  const planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(4.2, 64), planetMaterial);
+  planetGroup.add(planetMesh);
+
+  const atmosMat = new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: new THREE.Color('#c050ff') } },
+    vertexShader: `varying vec3 vNormal; void main() { vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 uColor; varying vec3 vNormal; void main() { float i = pow(0.7 - dot(vNormal, vec3(0,0,1)), 2.5); gl_FragColor = vec4(uColor, i * 0.35); }`,
+    transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending
+  });
+  planetGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(4.8, 32), atmosMat));
+
+  const ringGroup = new THREE.Group();
+  ringGroup.rotation.x = Math.PI * 0.4;
+  ringGroup.rotation.z = 0.2;
+  planetGroup.add(ringGroup);
+
+  const ringMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `
+      uniform float uTime; varying vec2 vUv;
+      void main() {
+        float dist = length(vUv - 0.5) * 2.0;
+        vec3 c = mix(vec3(0.0,0.9,1.0), vec3(0.75,0.3,1.0), dist);
+        c = mix(c, vec3(1.0,0.8,0.2), sin(dist*6.28+uTime)*0.3+0.3);
+        float a = smoothstep(0.0,0.2,dist)*smoothstep(1.0,0.8,dist);
+        a *= 0.6 + sin(dist*45.0+uTime*3.0)*0.2;
+        gl_FragColor = vec4(c, a * 0.7);
+      }
+    `,
+    transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending
+  });
+  ringGroup.add(new THREE.Mesh(new THREE.RingGeometry(5.8, 10.2, 128, 1), ringMat));
+  ringGroup.add(new THREE.Mesh(
+    new THREE.RingGeometry(5.0, 5.6, 128, 1),
+    new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+  ));
+
+  planetGroup.position.set(0, 0, -4);
+
+  // crystals
+  const crystals = [];
+  const cGeoms = [new THREE.OctahedronGeometry(0.4), new THREE.IcosahedronGeometry(0.35), new THREE.TetrahedronGeometry(0.4), new THREE.DodecahedronGeometry(0.3)];
+  const cColors = [0x00f2ff, 0xc050ff, 0xffcc44, 0xffffff];
+  for (let i = 0; i < 35; i++) {
+    const col = cColors[i % 4];
+    const mat = new THREE.MeshStandardMaterial({
+      color: col, emissive: col, emissiveIntensity: 0.2,
+      roughness: 0.2, metalness: 0.7, transparent: true, opacity: 0.8
+    });
+    const mesh = new THREE.Mesh(cGeoms[i % 4], mat);
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 14 + Math.random() * 28;
+    mesh.position.set(
+      r * Math.sin(phi) * Math.cos(theta),
+      r * Math.sin(phi) * Math.sin(theta),
+      -12 + Math.random() * 24
+    );
+    mesh.userData = {
+      originalPos: mesh.position.clone(),
+      rotSpeed: new THREE.Vector3((Math.random()-0.5)*0.02, (Math.random()-0.5)*0.02, (Math.random()-0.5)*0.02),
+      floatOffset: Math.random() * Math.PI * 2,
+      floatSpeed: 0.4 + Math.random() * 0.5
+    };
+    scene.add(mesh);
+    crystals.push(mesh);
+  }
+
+  // particles
+  const pCount = 1400;
+  const pPos = new Float32Array(pCount * 3);
+  const pCol = new Float32Array(pCount * 3);
+  const pSiz = new Float32Array(pCount);
+  for (let i = 0; i < pCount; i++) {
+    const r = 12 + Math.random() * 60;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    pPos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    pPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta) * 0.6;
+    pPos[i*3+2] = -25 + Math.random() * 70;
+    const c = new THREE.Color(cColors[i % 4]);
+    pCol[i*3] = c.r; pCol[i*3+1] = c.g; pCol[i*3+2] = c.b;
+    pSiz[i] = 1 + Math.random() * 3.5;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  pGeo.setAttribute('aColor',   new THREE.BufferAttribute(pCol, 3));
+  pGeo.setAttribute('aSize',    new THREE.BufferAttribute(pSiz, 1));
+
+  const pMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uPixelRatio: { value: renderer.getPixelRatio() } },
+    vertexShader: `
+      attribute vec3 aColor; attribute float aSize;
+      varying vec3 vColor; uniform float uTime, uPixelRatio;
+      void main() {
+        vColor = aColor;
+        vec3 pos = position;
+        pos.y += sin(uTime*0.4 + pos.x*0.2) * 0.8;
+        pos.x += cos(uTime*0.3 + pos.z*0.15) * 0.6;
+        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+        gl_PointSize = aSize * uPixelRatio * (100.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      void main() {
+        vec2 c = gl_PointCoord - vec2(0.5);
+        float d = length(c);
+        if (d > 0.5) discard;
+        float a = (1.0 - smoothstep(0.0, 0.5, d)) * 0.75;
+        gl_FragColor = vec4(vColor * (1.0 + (1.0-d)*0.3), a);
+      }
+    `,
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  // orbs
+  const orbitGroup = new THREE.Group();
+  scene.add(orbitGroup);
+  const orbColors = [0x00f2ff, 0xc050ff, 0xffcc44];
+  const orbs = orbColors.map((col, i) => {
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.9 }));
+    orb.add(new THREE.Mesh(new THREE.SphereGeometry(0.55, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 })));
+    orb.userData = { angle: (i/3)*Math.PI*2, radius: 7.5 + i*1.8, speed: 0.25 + i*0.12, yOffset: -1.5 + i*1.2 };
+    orbitGroup.add(orb);
+    return orb;
+  });
+  orbitGroup.position.copy(planetGroup.position);
+
+  // lighting
+  scene.add(new THREE.AmbientLight(0x404060, 0.5));
+  const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
+  const light2 = new THREE.PointLight(0xc050ff, 2.5, 70);
+  scene.add(light1, light2);
+
+  // loop
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    const time  = performance.now() / 1000;
+
+    mouse.x += (mouse.targetX - mouse.x) * 0.05;
+    mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+    planetMaterial.uniforms.uTime.value = time;
+    ringMat.uniforms.uTime.value        = time;
+    pMat.uniforms.uTime.value           = time;
+
+    planetMesh.rotation.y += 0.0018;
+    planetMesh.rotation.x  = Math.sin(time * 0.2) * 0.04;
+    ringGroup.rotation.z  += 0.0012;
+
+    planetGroup.rotation.y = mouse.x * 0.4;
+    planetGroup.rotation.x = mouse.y * 0.25;
+
+    crystals.forEach(c => {
+      c.rotation.x += c.userData.rotSpeed.x;
+      c.rotation.y += c.userData.rotSpeed.y;
+      c.rotation.z += c.userData.rotSpeed.z;
+      c.position.y  = c.userData.originalPos.y + Math.sin(time * c.userData.floatSpeed + c.userData.floatOffset) * 1.8;
+    });
+
+    particles.rotation.y += 0.0003;
+
+    orbs.forEach(o => {
+      o.userData.angle += o.userData.speed * delta * 2.5;
+      o.position.x = Math.cos(o.userData.angle) * o.userData.radius;
+      o.position.z = Math.sin(o.userData.angle) * o.userData.radius;
+      o.position.y = o.userData.yOffset + Math.sin(o.userData.angle * 1.5) * 1.8;
+    });
+
+    light1.position.set(Math.sin(time * 0.4) * 14, 8,  Math.cos(time * 0.4) * 14);
+    light2.position.set(Math.sin(time * 0.4 + 2.5) * 14, -6, Math.cos(time * 0.4 + 2.5) * 14);
+
+    camera.position.x = mouse.x * 2.5;
+    camera.position.y = mouse.y * 2.0;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    pMat.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+  });
+})();
+
+// card reveal
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const card = entry.target;
+      card.style.transitionDelay = (parseInt(card.dataset.delay || 0) * 70) + 'ms';
+      card.classList.add('visible');
+      observer.unobserve(card);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.card').forEach(c => observer.observe(c));
+
+  // logo slot reveal
+  const slotObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (!entry.isIntersecting) return;
+      entry.target.style.transitionDelay = (i * 80) + 'ms';
+      entry.target.classList.add('visible');
+      slotObserver.unobserve(entry.target);
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.logo-slot').forEach(s => slotObserver.observe(s));
+})();
+</script>
+
+</body>
+</html>
