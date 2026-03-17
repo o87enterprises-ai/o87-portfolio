@@ -479,7 +479,7 @@
 <div class="page">
 
   <section class="hero">
-    <div class="logo-3d">
+    <div class="logo-3d" style="display:none;">
       <img src="o87-logo.png" alt="o87 logo" class="logo-img"/>
     </div>
 
@@ -821,6 +821,144 @@ import * as THREE from 'three';
   const light2 = new THREE.PointLight(0xc050ff, 2.5, 70);
   scene.add(light1, light2);
 
+  // ══════════════════════════════════════
+  // 3D LOGO GROUP — lives in the scene
+  // ══════════════════════════════════════
+  renderer.localClippingEnabled = true;
+
+  const logoGroup = new THREE.Group();
+  scene.add(logoGroup);
+  logoGroup.position.set(0, 0.8, 12); // in front of background planet
+
+  // ── Ring ──
+  // Re-map UVs so x = angle (0-1 around ring), y = radial (0=inner, 1=outer)
+  const RING_IN = 3.0, RING_OUT = 5.8;
+  const ringLogoGeom = new THREE.RingGeometry(RING_IN, RING_OUT, 128, 4);
+  const rPos = ringLogoGeom.attributes.position;
+  const rUV  = ringLogoGeom.attributes.uv;
+  for (let i = 0; i < rPos.count; i++) {
+    const x = rPos.getX(i), y = rPos.getY(i);
+    const angle = ((Math.atan2(y, x) / (Math.PI * 2)) + 1) % 1;
+    const dist  = Math.sqrt(x*x + y*y);
+    const t     = (dist - RING_IN) / (RING_OUT - RING_IN);
+    rUV.setXY(i, angle, t);
+  }
+  rUV.needsUpdate = true;
+
+  const ringLogoMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
+    `,
+    fragmentShader: `
+      uniform float uTime; varying vec2 vUv;
+      void main() {
+        vec3 purple = vec3(0.75, 0.19, 1.0);
+        vec3 orange = vec3(1.0,  0.36, 0.12);
+        vec3 gold   = vec3(1.0,  0.74, 0.14);
+        float t = vUv.x;
+        vec3 col = mix(purple, orange, smoothstep(0.15, 0.65, t));
+        col = mix(col, gold, smoothstep(0.65, 0.95, t));
+        float r = vUv.y;
+        float a = smoothstep(0.0, 0.12, r) * smoothstep(1.0, 0.88, r);
+        a *= 0.75 + sin(r * 32.0 + uTime * 2.5) * 0.14;
+        gl_FragColor = vec4(col, a * 0.90);
+      }
+    `,
+    transparent: true, side: THREE.DoubleSide,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false, depthTest: true
+  });
+
+  const ringLogoMesh = new THREE.Mesh(ringLogoGeom, ringLogoMat);
+  ringLogoMesh.rotation.x = Math.PI * 0.83; // nearly flat equatorial ring
+  logoGroup.add(ringLogoMesh);
+
+  // ── Dark planet body — natural occluder of ring back arc ──
+  const bodyGeom = new THREE.SphereGeometry(2.55, 64, 32);
+  const bodyMat  = new THREE.MeshBasicMaterial({ color: 0x05030e });
+  const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
+  bodyMesh.scale.set(1.08, 0.76, 1.0); // flatten to ellipsoid
+  logoGroup.add(bodyMesh);
+
+  // ── "87" canvas texture ──
+  const tCanvas  = document.createElement('canvas');
+  tCanvas.width  = 660; tCanvas.height = 310;
+  const tCtx     = tCanvas.getContext('2d');
+  const tTexture = new THREE.CanvasTexture(tCanvas);
+
+  function draw87() {
+    tCtx.clearRect(0, 0, 660, 310);
+    tCtx.shadowColor = 'rgba(224, 48, 106, 0.8)';
+    tCtx.shadowBlur  = 48;
+    const grad = tCtx.createLinearGradient(80, 0, 600, 310);
+    grad.addColorStop(0,   '#FF4B1F');
+    grad.addColorStop(0.4, '#E0306A');
+    grad.addColorStop(1.0, '#1040C8');
+    tCtx.fillStyle    = grad;
+    tCtx.font         = '900 220px Orbitron, sans-serif';
+    tCtx.textAlign    = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.fillText('87', 380, 158); // shifted right — moon takes the left
+    tTexture.needsUpdate = true;
+  }
+  document.fonts.ready.then(draw87);
+  setTimeout(draw87, 1200); // fallback
+
+  const textGeom = new THREE.PlaneGeometry(4.4, 2.1);
+  const textMat  = new THREE.MeshBasicMaterial({
+    map: tTexture, transparent: true,
+    depthWrite: false, depthTest: true
+  });
+  const textMesh = new THREE.Mesh(textGeom, textMat);
+  textMesh.position.z = 0.12; // just in front of body surface
+  logoGroup.add(textMesh);
+
+  // ── Crescent moon ──
+  const moonLogoGeom = new THREE.SphereGeometry(0.54, 64, 64);
+  const moonLogoMat  = new THREE.ShaderMaterial({
+    vertexShader: `
+      varying vec3 vPos; varying vec3 vNormal;
+      void main() {
+        vPos    = position;
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vPos; varying vec3 vNormal;
+      void main() {
+        // Shadow sphere offset top-left → creates crescent opening bottom-right
+        vec3 shadowOff = vec3(-0.27, 0.27, 0.0);
+        if (length(vPos - shadowOff) < 0.43) discard;
+
+        // Light from bottom-right
+        vec3 lightDir = normalize(vec3(0.65, -0.65, 0.85));
+        float bright  = max(0.0, dot(vNormal, lightDir));
+
+        vec3 dark  = vec3(0.44, 0.60, 0.76);
+        vec3 light = vec3(1.0,  1.0,  1.0);
+        vec3 col   = mix(dark, light, pow(bright, 0.65));
+
+        // Atmosphere rim
+        float fresnel = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
+        col += vec3(0.08, 0.14, 0.26) * pow(fresnel, 3.0);
+
+        // Soft glow halo
+        float glow = pow(fresnel, 2.0) * 0.5;
+        col += vec3(0.6, 0.8, 1.0) * glow;
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `,
+    depthTest: true, depthWrite: false
+  });
+
+  const moonLogoMesh = new THREE.Mesh(moonLogoGeom, moonLogoMat);
+  moonLogoMesh.position.set(-1.58, 0.10, 0.14);
+  logoGroup.add(moonLogoMesh);
+
   // loop
   const clock = new THREE.Clock();
 
@@ -835,13 +973,21 @@ import * as THREE from 'three';
     planetMaterial.uniforms.uTime.value = time;
     ringMat.uniforms.uTime.value        = time;
     pMat.uniforms.uTime.value           = time;
+    ringLogoMat.uniforms.uTime.value    = time;
 
     planetMesh.rotation.y += 0.0018;
     planetMesh.rotation.x  = Math.sin(time * 0.2) * 0.04;
     ringGroup.rotation.z  += 0.0012;
 
+    // background planet follows mouse (subtle)
     planetGroup.rotation.y = mouse.x * 0.4;
     planetGroup.rotation.x = mouse.y * 0.25;
+
+    // 3D logo follows mouse (more responsive — it's the hero)
+    logoGroup.rotation.y = mouse.x * 0.55;
+    logoGroup.rotation.x = mouse.y * 0.35;
+    // gentle slow auto-rotation
+    logoGroup.rotation.y += Math.sin(time * 0.12) * 0.0015;
 
     crystals.forEach(c => {
       c.rotation.x += c.userData.rotSpeed.x;
