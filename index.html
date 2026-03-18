@@ -870,7 +870,7 @@ import * as THREE from 'three';
   addSprites(texNeb2,     10, 3.5, 8.0, 22, 60);   // purple nebulae
 
   // dummy particles ref for resize handler
-  const pMat = { uniforms: { uPixelRatio: { value: 1 } } };
+  const pMat = { uniforms: { uPixelRatio: { value: 1 }, uTime: { value: 0 } } };
   const particles = { rotation: { y: 0 } };
 
   // orbs
