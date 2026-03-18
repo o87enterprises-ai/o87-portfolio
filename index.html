@@ -720,87 +720,158 @@ import * as THREE from 'three';
     new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
   ));
 
-  planetGroup.position.set(0, 0, -4);
+  planetGroup.position.set(0, 0, -22); // far background
 
-  // crystals
-  const crystals = [];
-  const cGeoms = [new THREE.OctahedronGeometry(0.4), new THREE.IcosahedronGeometry(0.35), new THREE.TetrahedronGeometry(0.4), new THREE.DodecahedronGeometry(0.3)];
-  const cColors = [0x00f2ff, 0xc050ff, 0xffcc44, 0xffffff];
-  for (let i = 0; i < 35; i++) {
-    const col = cColors[i % 4];
-    const mat = new THREE.MeshStandardMaterial({
-      color: col, emissive: col, emissiveIntensity: 0.2,
-      roughness: 0.2, metalness: 0.7, transparent: true, opacity: 0.8
+  // ══════════════════════════════════════
+  // CELESTIAL OBJECT FIELD
+  // ══════════════════════════════════════
+
+  // ── Canvas texture generators ──
+  function makeStarTex() {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d'), cx = 32, cy = 32;
+    // core
+    const g = x.createRadialGradient(cx,cy,0, cx,cy,28);
+    g.addColorStop(0,'rgba(255,255,255,1)');
+    g.addColorStop(0.15,'rgba(200,230,255,0.9)');
+    g.addColorStop(0.5,'rgba(100,160,255,0.3)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(0,0,64,64);
+    // diffraction spikes
+    x.strokeStyle = 'rgba(200,220,255,0.5)'; x.lineWidth = 1;
+    [[cx,0,cx,64],[0,cy,64,cy],[8,8,56,56],[56,8,8,56]].forEach(([x1,y1,x2,y2]) => {
+      x.beginPath(); x.moveTo(x1,y1); x.lineTo(x2,y2); x.stroke();
     });
-    const mesh = new THREE.Mesh(cGeoms[i % 4], mat);
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const r = 14 + Math.random() * 28;
-    mesh.position.set(
-      r * Math.sin(phi) * Math.cos(theta),
-      r * Math.sin(phi) * Math.sin(theta),
-      -12 + Math.random() * 24
-    );
-    mesh.userData = {
-      originalPos: mesh.position.clone(),
-      rotSpeed: new THREE.Vector3((Math.random()-0.5)*0.02, (Math.random()-0.5)*0.02, (Math.random()-0.5)*0.02),
-      floatOffset: Math.random() * Math.PI * 2,
-      floatSpeed: 0.4 + Math.random() * 0.5
-    };
-    scene.add(mesh);
-    crystals.push(mesh);
+    return new THREE.CanvasTexture(c);
   }
 
-  // particles
-  const pCount = 1400;
-  const pPos = new Float32Array(pCount * 3);
-  const pCol = new Float32Array(pCount * 3);
-  const pSiz = new Float32Array(pCount);
-  for (let i = 0; i < pCount; i++) {
-    const r = 12 + Math.random() * 60;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    pPos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-    pPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta) * 0.6;
-    pPos[i*3+2] = -25 + Math.random() * 70;
-    const c = new THREE.Color(cColors[i % 4]);
-    pCol[i*3] = c.r; pCol[i*3+1] = c.g; pCol[i*3+2] = c.b;
-    pSiz[i] = 1 + Math.random() * 3.5;
+  function makeGalaxyTex(col1='#4488ff', col2='#aa44ff') {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d'), cx = 64, cy = 64;
+    x.save(); x.translate(cx,cy);
+    for (let arm = 0; arm < 3; arm++) {
+      x.rotate((Math.PI*2)/3);
+      for (let i = 0; i < 60; i++) {
+        const t = i/60, r = 8+t*50, angle = t*Math.PI*3;
+        const px = Math.cos(angle)*r, py = Math.sin(angle)*r*0.35;
+        const g2 = x.createRadialGradient(px,py,0,px,py,3+t*4);
+        g2.addColorStop(0, t<0.5?col1:col2);
+        g2.addColorStop(1,'rgba(0,0,0,0)');
+        x.fillStyle=g2; x.beginPath(); x.arc(px,py,3+t*4,0,Math.PI*2); x.fill();
+      }
+    }
+    // core glow
+    const gc = x.createRadialGradient(0,0,0,0,0,18);
+    gc.addColorStop(0,'rgba(255,240,200,0.95)');
+    gc.addColorStop(0.4,'rgba(255,200,100,0.4)');
+    gc.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=gc; x.beginPath(); x.arc(0,0,18,0,Math.PI*2); x.fill();
+    x.restore();
+    return new THREE.CanvasTexture(c);
   }
-  const pGeo = new THREE.BufferGeometry();
-  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  pGeo.setAttribute('aColor',   new THREE.BufferAttribute(pCol, 3));
-  pGeo.setAttribute('aSize',    new THREE.BufferAttribute(pSiz, 1));
 
-  const pMat = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uPixelRatio: { value: renderer.getPixelRatio() } },
-    vertexShader: `
-      attribute vec3 aColor; attribute float aSize;
-      varying vec3 vColor; uniform float uTime, uPixelRatio;
-      void main() {
-        vColor = aColor;
-        vec3 pos = position;
-        pos.y += sin(uTime*0.4 + pos.x*0.2) * 0.8;
-        pos.x += cos(uTime*0.3 + pos.z*0.15) * 0.6;
-        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-        gl_PointSize = aSize * uPixelRatio * (100.0 / -mv.z);
-        gl_Position = projectionMatrix * mv;
-      }
-    `,
-    fragmentShader: `
-      varying vec3 vColor;
-      void main() {
-        vec2 c = gl_PointCoord - vec2(0.5);
-        float d = length(c);
-        if (d > 0.5) discard;
-        float a = (1.0 - smoothstep(0.0, 0.5, d)) * 0.75;
-        gl_FragColor = vec4(vColor * (1.0 + (1.0-d)*0.3), a);
-      }
-    `,
-    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-  });
-  const particles = new THREE.Points(pGeo, pMat);
-  scene.add(particles);
+  function makePlanetTex(r,g,b) {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d');
+    const grd = x.createRadialGradient(22,20,2, 32,32,28);
+    grd.addColorStop(0,`rgba(${Math.min(255,r+80)},${Math.min(255,g+80)},${Math.min(255,b+80)},1)`);
+    grd.addColorStop(0.5,`rgba(${r},${g},${b},1)`);
+    grd.addColorStop(1,`rgba(${Math.max(0,r-60)},${Math.max(0,g-60)},${Math.max(0,b-60)},0.9)`);
+    x.fillStyle=grd; x.beginPath(); x.arc(32,32,28,0,Math.PI*2); x.fill();
+    // atmosphere
+    const ga = x.createRadialGradient(32,32,24, 32,32,32);
+    ga.addColorStop(0,'rgba(0,0,0,0)');
+    ga.addColorStop(1,`rgba(${r},${g},${b},0.3)`);
+    x.fillStyle=ga; x.beginPath(); x.arc(32,32,32,0,Math.PI*2); x.fill();
+    return new THREE.CanvasTexture(c);
+  }
+
+  function makeBlackHoleTex() {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d'), cx=64, cy=64;
+    // accretion disk glow
+    const gd = x.createRadialGradient(cx,cy,12, cx,cy,58);
+    gd.addColorStop(0,'rgba(255,140,0,0.9)');
+    gd.addColorStop(0.3,'rgba(200,60,255,0.5)');
+    gd.addColorStop(0.7,'rgba(0,100,255,0.2)');
+    gd.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=gd; x.beginPath(); x.arc(cx,cy,58,0,Math.PI*2); x.fill();
+    // void center
+    x.fillStyle='rgba(0,0,0,1)';
+    x.beginPath(); x.arc(cx,cy,14,0,Math.PI*2); x.fill();
+    return new THREE.CanvasTexture(c);
+  }
+
+  function makeNebulaTex(r,g,b) {
+    const c = document.createElement('canvas'); c.width = c.height = 96;
+    const x = c.getContext('2d');
+    for (let i=0;i<4;i++) {
+      const px=20+Math.random()*56, py=20+Math.random()*56, pr=15+Math.random()*25;
+      const gn = x.createRadialGradient(px,py,0,px,py,pr);
+      gn.addColorStop(0,`rgba(${r},${g},${b},0.5)`);
+      gn.addColorStop(1,'rgba(0,0,0,0)');
+      x.fillStyle=gn; x.beginPath(); x.arc(px,py,pr,0,Math.PI*2); x.fill();
+    }
+    return new THREE.CanvasTexture(c);
+  }
+
+  // pre-bake textures
+  const texStar    = makeStarTex();
+  const texGal1    = makeGalaxyTex('#4488ff','#aa44ff');
+  const texGal2    = makeGalaxyTex('#ffaa22','#ff4422');
+  const texPlanet1 = makePlanetTex(80,160,255);   // blue
+  const texPlanet2 = makePlanetTex(255,120,40);   // orange
+  const texPlanet3 = makePlanetTex(120,255,160);  // green
+  const texPlanet4 = makePlanetTex(200,80,255);   // purple
+  const texBH      = makeBlackHoleTex();
+  const texNeb1    = makeNebulaTex(80,120,255);
+  const texNeb2    = makeNebulaTex(200,60,255);
+
+  const celestials = [];
+
+  function addSprites(texture, count, sizeMin, sizeMax, rMin, rMax, color=null) {
+    const mat = new THREE.SpriteMaterial({
+      map: texture, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+      color: color || 0xffffff
+    });
+    for (let i=0; i<count; i++) {
+      const s = new THREE.Sprite(mat.clone());
+      const sz = sizeMin + Math.random()*(sizeMax-sizeMin);
+      s.scale.set(sz, sz, 1);
+      const theta = Math.random()*Math.PI*2;
+      const phi   = Math.acos(2*Math.random()-1);
+      const r     = rMin + Math.random()*(rMax-rMin);
+      s.position.set(
+        r*Math.sin(phi)*Math.cos(theta),
+        r*Math.sin(phi)*Math.sin(theta)*0.7,
+        -30+Math.random()*80
+      );
+      s.userData = {
+        floatOffset: Math.random()*Math.PI*2,
+        floatSpeed:  0.1+Math.random()*0.3,
+        originalY:   s.position.y,
+        twinkle:     Math.random() > 0.6
+      };
+      scene.add(s);
+      celestials.push(s);
+    }
+  }
+
+  addSprites(texStar,    320, 0.4, 2.2,  8, 65);   // stars
+  addSprites(texGal1,     18, 2.5, 6.0, 20, 70);   // blue/purple galaxies
+  addSprites(texGal2,     12, 2.0, 5.0, 25, 65);   // orange/red galaxies
+  addSprites(texPlanet1,  14, 1.2, 2.8, 12, 55);   // blue planets
+  addSprites(texPlanet2,  10, 1.0, 2.4, 14, 50);   // orange planets
+  addSprites(texPlanet3,   8, 0.9, 2.0, 16, 48);   // green planets
+  addSprites(texPlanet4,   8, 1.0, 2.2, 18, 52);   // purple planets
+  addSprites(texBH,        6, 1.8, 3.5, 28, 60);   // black holes
+  addSprites(texNeb1,     14, 4.0, 9.0, 20, 65);   // blue nebulae
+  addSprites(texNeb2,     10, 3.5, 8.0, 22, 60);   // purple nebulae
+
+  // dummy particles ref for resize handler
+  const pMat = { uniforms: { uPixelRatio: { value: 1 } } };
+  const particles = { rotation: { y: 0 } };
 
   // orbs
   const orbitGroup = new THREE.Group();
@@ -890,8 +961,8 @@ import * as THREE from 'three';
 
   function draw87() {
     tCtx.clearRect(0, 0, 660, 310);
-    tCtx.shadowColor = 'rgba(224, 48, 106, 0.8)';
-    tCtx.shadowBlur  = 48;
+    tCtx.shadowColor = 'rgba(224, 48, 106, 0.9)';
+    tCtx.shadowBlur  = 52;
     const grad = tCtx.createLinearGradient(80, 0, 600, 310);
     grad.addColorStop(0,   '#FF4B1F');
     grad.addColorStop(0.4, '#E0306A');
@@ -900,11 +971,22 @@ import * as THREE from 'three';
     tCtx.font         = '900 220px Orbitron, sans-serif';
     tCtx.textAlign    = 'center';
     tCtx.textBaseline = 'middle';
-    tCtx.fillText('87', 380, 158); // shifted right — moon takes the left
+    tCtx.fillText('87', 380, 158);
     tTexture.needsUpdate = true;
   }
-  document.fonts.ready.then(draw87);
-  setTimeout(draw87, 1200); // fallback
+
+  // Force-load Orbitron via FontFace API before drawing
+  const orbitronFace = new FontFace(
+    'Orbitron',
+    'url(https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgz.woff2)'
+  );
+  orbitronFace.load().then(f => {
+    document.fonts.add(f);
+    draw87();
+  }).catch(() => {
+    // fallback: try anyway after delay
+    setTimeout(draw87, 800);
+  });
 
   const textGeom = new THREE.PlaneGeometry(4.4, 2.1);
   const textMat  = new THREE.MeshBasicMaterial({
@@ -979,24 +1061,26 @@ import * as THREE from 'three';
     planetMesh.rotation.x  = Math.sin(time * 0.2) * 0.04;
     ringGroup.rotation.z  += 0.0012;
 
-    // background planet follows mouse (subtle)
-    planetGroup.rotation.y = mouse.x * 0.4;
-    planetGroup.rotation.x = mouse.y * 0.25;
+    // background planet: very subtle drift — feels like a distant star
+    planetGroup.rotation.y = mouse.x * 0.08;
+    planetGroup.rotation.x = mouse.y * 0.05;
 
-    // 3D logo follows mouse (more responsive — it's the hero)
+    // 3D logo follows mouse (hero — more responsive)
     logoGroup.rotation.y = mouse.x * 0.55;
     logoGroup.rotation.x = mouse.y * 0.35;
-    // gentle slow auto-rotation
     logoGroup.rotation.y += Math.sin(time * 0.12) * 0.0015;
 
-    crystals.forEach(c => {
-      c.rotation.x += c.userData.rotSpeed.x;
-      c.rotation.y += c.userData.rotSpeed.y;
-      c.rotation.z += c.userData.rotSpeed.z;
-      c.position.y  = c.userData.originalPos.y + Math.sin(time * c.userData.floatSpeed + c.userData.floatOffset) * 1.8;
+    // animate celestial objects — slow drift + twinkle
+    celestials.forEach((s, i) => {
+      const d = s.userData;
+      s.position.y = d.originalY + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.6;
+      if (d.twinkle) {
+        const flicker = 0.7 + 0.3 * Math.sin(time * (2 + i * 0.07) + d.floatOffset);
+        s.material.opacity = flicker;
+      }
     });
 
-    particles.rotation.y += 0.0003;
+    particles.rotation.y += 0; // no-op, kept for compat
 
     orbs.forEach(o => {
       o.userData.angle += o.userData.speed * delta * 2.5;
