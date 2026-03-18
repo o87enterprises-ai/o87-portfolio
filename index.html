@@ -113,6 +113,39 @@
       50% { transform: translateY(-8px) scale(1.005); }
     }
 
+    /* ── o87 HTML overlay ── */
+    .logo-text-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -58%);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      letter-spacing: -0.03em;
+      pointer-events: none;
+      z-index: 15;
+      line-height: 1;
+      animation: logoFloat 6s ease-in-out infinite;
+    }
+
+    .logo-o {
+      /* crescent moon: white fading to silver-blue */
+      background: radial-gradient(ellipse at 65% 65%, #ffffff 0%, #c8dff0 45%, #7aaac8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(180,220,255,0.8));
+    }
+
+    .logo-87 {
+      background: linear-gradient(135deg, #FF4B1F 0%, #E0306A 40%, #1040C8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 22px rgba(255,75,31,0.6)) drop-shadow(0 0 44px rgba(16,64,200,0.4));
+    }
+
     .caption {
       text-align: center;
       opacity: 0;
@@ -481,6 +514,11 @@
   <section class="hero">
     <div class="logo-3d" style="display:none;">
       <img src="o87-logo.png" alt="o87 logo" class="logo-img"/>
+    </div>
+
+    <!-- o87 text sits over the 3D ring via absolute positioning -->
+    <div class="logo-text-overlay">
+      <span class="logo-o">o</span><span class="logo-87">87</span>
     </div>
 
     <div class="caption">
@@ -950,96 +988,8 @@ import * as THREE from 'three';
   const bodyGeom = new THREE.SphereGeometry(2.55, 64, 32);
   const bodyMat  = new THREE.MeshBasicMaterial({ color: 0x05030e });
   const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
-  bodyMesh.scale.set(1.08, 0.76, 1.0); // flatten to ellipsoid
+  bodyMesh.scale.set(1.08, 0.76, 1.0);
   logoGroup.add(bodyMesh);
-
-  // ── "87" canvas texture ──
-  const tCanvas  = document.createElement('canvas');
-  tCanvas.width  = 660; tCanvas.height = 310;
-  const tCtx     = tCanvas.getContext('2d');
-  const tTexture = new THREE.CanvasTexture(tCanvas);
-
-  function draw87() {
-    tCtx.clearRect(0, 0, 660, 310);
-    tCtx.shadowColor = 'rgba(224, 48, 106, 0.9)';
-    tCtx.shadowBlur  = 52;
-    const grad = tCtx.createLinearGradient(80, 0, 600, 310);
-    grad.addColorStop(0,   '#FF4B1F');
-    grad.addColorStop(0.4, '#E0306A');
-    grad.addColorStop(1.0, '#1040C8');
-    tCtx.fillStyle    = grad;
-    tCtx.font         = '900 220px Orbitron, sans-serif';
-    tCtx.textAlign    = 'center';
-    tCtx.textBaseline = 'middle';
-    tCtx.fillText('87', 380, 158);
-    tTexture.needsUpdate = true;
-  }
-
-  // Force-load Orbitron via FontFace API before drawing
-  const orbitronFace = new FontFace(
-    'Orbitron',
-    'url(https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgz.woff2)'
-  );
-  orbitronFace.load().then(f => {
-    document.fonts.add(f);
-    draw87();
-  }).catch(() => {
-    // fallback: try anyway after delay
-    setTimeout(draw87, 800);
-  });
-
-  const textGeom = new THREE.PlaneGeometry(4.4, 2.1);
-  const textMat  = new THREE.MeshBasicMaterial({
-    map: tTexture, transparent: true,
-    depthWrite: false, depthTest: true
-  });
-  const textMesh = new THREE.Mesh(textGeom, textMat);
-  textMesh.position.z = 0.12; // just in front of body surface
-  logoGroup.add(textMesh);
-
-  // ── Crescent moon ──
-  const moonLogoGeom = new THREE.SphereGeometry(0.54, 64, 64);
-  const moonLogoMat  = new THREE.ShaderMaterial({
-    vertexShader: `
-      varying vec3 vPos; varying vec3 vNormal;
-      void main() {
-        vPos    = position;
-        vNormal = normalize(normalMatrix * normal);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      varying vec3 vPos; varying vec3 vNormal;
-      void main() {
-        // Shadow sphere offset top-left → creates crescent opening bottom-right
-        vec3 shadowOff = vec3(-0.27, 0.27, 0.0);
-        if (length(vPos - shadowOff) < 0.43) discard;
-
-        // Light from bottom-right
-        vec3 lightDir = normalize(vec3(0.65, -0.65, 0.85));
-        float bright  = max(0.0, dot(vNormal, lightDir));
-
-        vec3 dark  = vec3(0.44, 0.60, 0.76);
-        vec3 light = vec3(1.0,  1.0,  1.0);
-        vec3 col   = mix(dark, light, pow(bright, 0.65));
-
-        // Atmosphere rim
-        float fresnel = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        col += vec3(0.08, 0.14, 0.26) * pow(fresnel, 3.0);
-
-        // Soft glow halo
-        float glow = pow(fresnel, 2.0) * 0.5;
-        col += vec3(0.6, 0.8, 1.0) * glow;
-
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `,
-    depthTest: true, depthWrite: false
-  });
-
-  const moonLogoMesh = new THREE.Mesh(moonLogoGeom, moonLogoMat);
-  moonLogoMesh.position.set(-1.58, 0.10, 0.14);
-  logoGroup.add(moonLogoMesh);
 
   // loop
   const clock = new THREE.Clock();
