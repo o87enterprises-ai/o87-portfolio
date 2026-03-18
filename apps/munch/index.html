@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Munch - AI Dating Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">MUNCH</div>
+            <button class="sidebar-close" onclick="closeSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Progress Ring & Stats -->
+            <div class="stats-section">
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" viewBox="0 0 120 120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+                        <circle class="progress-ring-fill" cx="60" cy="60" r="52" id="progress-circle"/>
+                    </svg>
+                    <div class="progress-value" id="chemistry-score">0%</div>
+                </div>
+                <div class="stats-info">
+                    <h3>Success/Failure</h3>
+                    <div class="stats-row">
+                        <span class="stat-success"><span class="dot green"></span><span id="success-rate">0%</span> Success</span>
+                        <span class="stat-failure"><span id="failure-rate">0%</span> Failure</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Tip -->
+            <div class="ai-tip-section">
+                <div class="ai-tip-card">
+                    <div class="ai-tip-label">Try This:</div>
+                    <p id="ai-tip-text">Start a conversation to get personalized tips!</p>
+                </div>
+            </div>
+
+            <!-- Conversation History -->
+            <div class="conversation-history">
+                <h3>CONVERSATION HISTORY</h3>
+                <div id="conversation-list" class="conversation-list">
+                    <!-- Conversations will be loaded here -->
+                    <div class="empty-state">No conversations yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upgrade Button -->
+        <div class="sidebar-footer">
+            <button class="btn-upgrade">Upgrade to Premium</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Top Banner -->
+        <div class="promo-banner">
+            <span>Enjoying the app? Get premium for no ads!</span>
+            <button class="btn-upgrade-small">Upgrade</button>
+        </div>
+
+        <!-- Menu Toggle Button -->
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Logo -->
+        <div class="logo-container">
+            <img src="/static/logo.png" alt="Munch" class="logo">
+        </div>
+
+        <!-- Connection Status -->
+        <div id="status" class="status">
+            <span id="status-indicator" class="status-indicator"></span>
+            <span id="status-text">Checking...</span>
+        </div>
+
+        <!-- Main Input Card -->
+        <div class="input-card">
+            <div class="input-wrapper">
+                <textarea id="message-input" placeholder="Paste messages or upload a screenshot..." rows="3"></textarea>
+                <button class="upload-btn" onclick="triggerUpload()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </button>
+                <input type="file" id="file-upload" accept="image/*" style="display:none" onchange="handleFileUpload(event)">
+            </div>
+
+            <!-- Response Type Selector -->
+            <div class="response-type-section">
+                <label>Response Type Selector</label>
+                <div class="response-types">
+                    <button class="type-btn active" data-type="Dating App">Dating App</button>
+                    <button class="type-btn" data-type="Text">Text</button>
+                    <button class="type-btn" data-type="DMs">DMs</button>
+                    <button class="type-btn" data-type="Cold Approach">Cold Approach</button>
+                    <button class="type-btn" data-type="Live Dating">Live Dating</button>
+                    <button class="type-btn" data-type="Openers / Closers">Openers / Closers</button>
+                    <button class="type-btn" data-type="Practice">Practice</button>
+                </div>
+            </div>
+
+            <!-- Analyze Button -->
+            <button class="btn-analyze" onclick="analyzeConversation()">Analyze & Get Suggestion</button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-section hidden">
+            <div class="result-card">
+                <h3>AI Suggestion</h3>
+                <div id="suggestion-text" class="suggestion-text"></div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="footer-actions">
+            <button class="btn-premium">Upgrade to Premium</button>
+            <a href="#" class="watch-ad-link">Watch Ad for Premium</a>
+        </div>
+    </div>
+
+    <!-- New Conversation Modal -->
+    <div id="new-conv-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>New Conversation</h3>
+            <input type="text" id="conv-name" placeholder="Name (e.g., Sarah from Tinder)">
+            <select id="conv-type">
+                <option value="Dating App">Dating App</option>
+                <option value="Text">Text</option>
+                <option value="DMs">DMs</option>
+                <option value="Cold Approach">Cold Approach</option>
+                <option value="Live Dating">Live Dating</option>
+                <option value="Openers / Closers">Openers / Closers</option>
+                <option value="Practice">Practice</option>
+            </select>
+            <div class="modal-buttons">
+                <button onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="createConversation()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

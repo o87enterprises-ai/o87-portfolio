@@ -708,11 +708,8 @@
       <div class="card gold" data-delay="1">
         <div class="card-num">002 // AI ASSISTANT</div>
         <h3 class="card-title">Munch</h3>
-        <div class="card-preview" onclick="openModal('Munch','','placeholder','🍑','AI-powered dating assistant. Interactive preview coming soon.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">🍑</div>
-            <p>Preview coming soon</p>
-          </div>
+        <div class="card-preview" onclick="openModal('Munch','/apps/munch/index.html','iframe')">
+          <iframe src="/apps/munch/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Intelligent dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
@@ -1217,34 +1214,49 @@ import * as THREE from 'three';
     atmo.addColorStop(1, 'rgba(192,80,255,0.12)');
     discCtx.fillStyle = atmo;
     discCtx.fillRect(0, 0, 512, 512);
-    // "o" — moon style: silver-white radial
+
+    const CX = 256, CY = 256; // true canvas center
+    const fontSize = 152;
+    discCtx.font = `900 ${fontSize}px Orbitron, sans-serif`;
+
+    // measure total width to center the whole "o87" as one unit
+    const wO  = discCtx.measureText('o').width;
+    const w87 = discCtx.measureText('87').width;
+    const gap = 6;
+    const totalW = wO + gap + w87;
+    const startX = CX - totalW / 2;
+
+    // "o" — moon style
     discCtx.save();
-    discCtx.shadowColor = 'rgba(180,220,255,0.9)';
-    discCtx.shadowBlur = 28;
-    const oGrad = discCtx.createRadialGradient(148,230,5, 148,240,70);
+    discCtx.shadowColor = 'rgba(180,220,255,0.95)';
+    discCtx.shadowBlur = 32;
+    const oGrad = discCtx.createRadialGradient(
+      startX + wO*0.6, CY + fontSize*0.25, 4,
+      startX + wO*0.5, CY + fontSize*0.3, wO*0.7
+    );
     oGrad.addColorStop(0, '#ffffff');
     oGrad.addColorStop(0.5, '#cce4f5');
     oGrad.addColorStop(1, '#7aaac8');
     discCtx.fillStyle = oGrad;
-    discCtx.font = '900 148px Orbitron, sans-serif';
-    discCtx.textAlign = 'center';
+    discCtx.textAlign    = 'left';
     discCtx.textBaseline = 'middle';
-    discCtx.fillText('o', 148, 268);
+    discCtx.fillText('o', startX, CY);
     discCtx.restore();
-    // "87" — orange → rose → blue gradient
+
+    // "87" — orange → rose → blue
     discCtx.save();
-    discCtx.shadowColor = 'rgba(255,75,31,0.85)';
-    discCtx.shadowBlur = 36;
-    const g87 = discCtx.createLinearGradient(180, 180, 480, 360);
-    g87.addColorStop(0, '#FF4B1F');
+    discCtx.shadowColor = 'rgba(255,75,31,0.9)';
+    discCtx.shadowBlur = 38;
+    const g87 = discCtx.createLinearGradient(startX + wO + gap, CY - fontSize*0.5, startX + totalW, CY + fontSize*0.5);
+    g87.addColorStop(0,   '#FF4B1F');
     g87.addColorStop(0.4, '#E0306A');
-    g87.addColorStop(1, '#1040C8');
-    discCtx.fillStyle = g87;
-    discCtx.font = '900 188px Orbitron, sans-serif';
-    discCtx.textAlign = 'center';
+    g87.addColorStop(1,   '#1040C8');
+    discCtx.fillStyle    = g87;
+    discCtx.textAlign    = 'left';
     discCtx.textBaseline = 'middle';
-    discCtx.fillText('87', 340, 268);
+    discCtx.fillText('87', startX + wO + gap, CY);
     discCtx.restore();
+
     discTexture.needsUpdate = true;
   }
 
