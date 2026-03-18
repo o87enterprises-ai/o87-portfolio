@@ -502,9 +502,168 @@
       .card { padding: 1.8rem 1.5rem; }
       .caption-title { font-size: 1.8rem; letter-spacing: 0.1em; }
     }
+    /* ══ CARD PREVIEW THUMBNAIL ══ */
+    .card-preview {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      margin: 0.8rem 0 1.2rem;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(var(--a), 0.15);
+      transition: height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s;
+      background: rgba(0,0,0,0.4);
+    }
+    .card-preview:hover {
+      height: 180px;
+      border-color: rgba(var(--a), 0.5);
+    }
+    .card-preview iframe {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+      border: none;
+      pointer-events: none;
+      border-radius: 0;
+    }
+    .card-preview .preview-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, rgba(var(--a),0.06), rgba(0,0,0,0.5));
+    }
+    .card-preview .preview-placeholder .preview-icon {
+      font-size: 1.8rem;
+      opacity: 0.6;
+    }
+    .card-preview .preview-placeholder p {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(var(--a), 0.7);
+    }
+    .card-preview .expand-hint {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      color: rgba(var(--a), 0.6);
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    /* ══ FULLSCREEN MODAL ══ */
+    .project-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(4,3,13,0.96);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .project-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.1em;
+    }
+    .modal-close {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .modal-close:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .modal-body {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .modal-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      color: var(--muted);
+    }
+    .modal-placeholder .modal-icon { font-size: 4rem; opacity: 0.5; }
+    .modal-placeholder h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      color: var(--white);
+    }
+    .modal-placeholder p {
+      font-size: 1rem;
+      max-width: 400px;
+      text-align: center;
+      line-height: 1.7;
+    }
+    .modal-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
   </style>
 </head>
 <body>
+
+<!-- ══ FULLSCREEN PROJECT MODAL ══ -->
+<div class="project-modal" id="projectModal">
+  <div class="modal-header">
+    <span class="modal-title" id="modalTitle">Project</span>
+    <button class="modal-close" onclick="closeModal()">✕ &nbsp;close</button>
+  </div>
+  <div class="modal-body" id="modalBody"></div>
+</div>
 
 <canvas id="three-canvas"></canvas>
 <div class="nebula"></div>
@@ -516,7 +675,6 @@
       <img src="o87-logo.png" alt="o87 logo" class="logo-img"/>
     </div>
 
-    <!-- o87 text sits over the 3D ring via absolute positioning -->
     <div class="logo-text-overlay">
       <span class="logo-o">o</span><span class="logo-87">87</span>
     </div>
@@ -536,6 +694,10 @@
       <div class="card" data-delay="0">
         <div class="card-num">001 // VOICE AI</div>
         <h3 class="card-title">TrumpAFi</h3>
+        <div class="card-preview" onclick="openModal('TrumpAFi','https://trumpafi.online','iframe')">
+          <iframe src="https://trumpafi.online" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Satirical AI voice chatbot channeling the 45th president's energy. Custom personality engine with real‑time voice generation.</p>
         <div class="card-footer">
           <span class="badge live">Live</span>
@@ -546,15 +708,27 @@
       <div class="card gold" data-delay="1">
         <div class="card-num">002 // AI ASSISTANT</div>
         <h3 class="card-title">Munch</h3>
-        <p class="card-desc">Intelligent dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
-        <div class="card-footer">
-          <span class="badge dev">In Dev</span>
+        <div class="card-preview" onclick="openModal('Munch','','placeholder','🍑','AI-powered dating assistant. Interactive preview coming soon.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">🍑</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
         </div>
+        <p class="card-desc">Intelligent dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
       <div class="card purple" data-delay="2">
         <div class="card-num">003 // SEARCH</div>
         <h3 class="card-title">Truegle</h3>
+        <div class="card-preview" onclick="openModal('Truegle','','placeholder','🔍','Privacy-first search engine. Interactive preview coming soon.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">🔍</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Next‑gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
@@ -562,20 +736,41 @@
       <div class="card" data-delay="3">
         <div class="card-num">004 // MAPS</div>
         <h3 class="card-title">Truegle Maps</h3>
-        <p class="card-desc">Open‑street based layers with AI‑powered route optimization. Description coming soon.</p>
+        <div class="card-preview" onclick="openModal('Truegle Maps','','placeholder','🗺️','Open-street mapping with AI route optimization. Preview coming soon.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">🗺️</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
+        <p class="card-desc">Open‑street based layers with AI‑powered route optimization.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
       <div class="card gold" data-delay="4">
-        <div class="card-num">005 // ???</div>
+        <div class="card-num">005 // BARBERSHOP</div>
         <h3 class="card-title">Whistle Stop</h3>
+        <div class="card-preview" onclick="openModal('Whistle Stop','','placeholder','💈','Barber & Beauty shop platform. Preview coming soon.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">💈</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Decentralized micro‑blogging for communities. Concept stage.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
       <div class="card purple" data-delay="5">
-        <div class="card-num">006 // ???</div>
+        <div class="card-num">006 // QUEUE</div>
         <h3 class="card-title">Que</h3>
+        <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">📋</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Smart queue management for events & venues. Backend ready — needs UI.</p>
         <div class="card-footer"><span class="badge wip">Needs UI</span></div>
       </div>
@@ -583,13 +778,27 @@
       <div class="card" data-delay="6">
         <div class="card-num">007 // ASTROLOGY</div>
         <h3 class="card-title">Astrology API</h3>
+        <div class="card-preview" onclick="openModal('Astrology API','','placeholder','🔭','Celestial data API with AI interpretations. Preview coming soon.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">🔭</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Celestial data API with AI interpretations. For developers & creatives.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
       <div class="card gold" data-delay="7">
-        <div class="card-num">008 // ???</div>
+        <div class="card-num">008 // DEALS</div>
         <h3 class="card-title">Frugle</h3>
+        <div class="card-preview" onclick="openModal('Frugle','','placeholder','💰','Price comparison & deal hunter. Scraping layer done.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">💰</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Price comparison & deal hunter. Scraping layer done.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
@@ -597,6 +806,13 @@
       <div class="card purple" data-delay="8">
         <div class="card-num">009 // OSINT</div>
         <h3 class="card-title">OSINT Tool</h3>
+        <div class="card-preview" onclick="openModal('OSINT Tool','','placeholder','🕵️','Open-source intelligence gathering. Robust backend — frontend contribution welcome.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">🕵️</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
         <p class="card-desc">Open‑source intelligence gathering. Robust backend — frontend contribution welcome.</p>
         <div class="card-footer"><span class="badge wip">Needs UI</span></div>
       </div>
@@ -984,9 +1200,62 @@ import * as THREE from 'three';
   ringLogoMesh.rotation.x = Math.PI * 0.83; // nearly flat equatorial ring
   logoGroup.add(ringLogoMesh);
 
-  // ── Dark planet body — natural occluder of ring back arc ──
+  // ── Disc face canvas texture with o87 logo ──
+  const discCanvas = document.createElement('canvas');
+  discCanvas.width = discCanvas.height = 512;
+  const discCtx = discCanvas.getContext('2d');
+  const discTexture = new THREE.CanvasTexture(discCanvas);
+
+  function drawDiscFace() {
+    discCtx.clearRect(0, 0, 512, 512);
+    // deep void background
+    discCtx.fillStyle = '#05030e';
+    discCtx.fillRect(0, 0, 512, 512);
+    // subtle radial atmosphere
+    const atmo = discCtx.createRadialGradient(256,256,60, 256,256,256);
+    atmo.addColorStop(0, 'rgba(16,8,40,0)');
+    atmo.addColorStop(1, 'rgba(192,80,255,0.12)');
+    discCtx.fillStyle = atmo;
+    discCtx.fillRect(0, 0, 512, 512);
+    // "o" — moon style: silver-white radial
+    discCtx.save();
+    discCtx.shadowColor = 'rgba(180,220,255,0.9)';
+    discCtx.shadowBlur = 28;
+    const oGrad = discCtx.createRadialGradient(148,230,5, 148,240,70);
+    oGrad.addColorStop(0, '#ffffff');
+    oGrad.addColorStop(0.5, '#cce4f5');
+    oGrad.addColorStop(1, '#7aaac8');
+    discCtx.fillStyle = oGrad;
+    discCtx.font = '900 148px Orbitron, sans-serif';
+    discCtx.textAlign = 'center';
+    discCtx.textBaseline = 'middle';
+    discCtx.fillText('o', 148, 268);
+    discCtx.restore();
+    // "87" — orange → rose → blue gradient
+    discCtx.save();
+    discCtx.shadowColor = 'rgba(255,75,31,0.85)';
+    discCtx.shadowBlur = 36;
+    const g87 = discCtx.createLinearGradient(180, 180, 480, 360);
+    g87.addColorStop(0, '#FF4B1F');
+    g87.addColorStop(0.4, '#E0306A');
+    g87.addColorStop(1, '#1040C8');
+    discCtx.fillStyle = g87;
+    discCtx.font = '900 188px Orbitron, sans-serif';
+    discCtx.textAlign = 'center';
+    discCtx.textBaseline = 'middle';
+    discCtx.fillText('87', 340, 268);
+    discCtx.restore();
+    discTexture.needsUpdate = true;
+  }
+
+  // Draw immediately with fallback font, then redraw with Orbitron when loaded
+  drawDiscFace();
+  document.fonts.load('900 1px Orbitron').then(() => {
+    drawDiscFace();
+  });
+
   const bodyGeom = new THREE.SphereGeometry(2.55, 64, 32);
-  const bodyMat  = new THREE.MeshBasicMaterial({ color: 0x05030e });
+  const bodyMat  = new THREE.MeshBasicMaterial({ map: discTexture });
   const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
   bodyMesh.scale.set(1.08, 0.76, 1.0);
   logoGroup.add(bodyMesh);
@@ -1060,7 +1329,39 @@ import * as THREE from 'three';
   });
 })();
 
-// card reveal
+// modal system
+function openModal(title, url, type, icon='', desc='') {
+  const modal = document.getElementById('projectModal');
+  const body  = document.getElementById('modalBody');
+  const tEl   = document.getElementById('modalTitle');
+  tEl.textContent = title;
+  body.innerHTML = '';
+  if (type === 'iframe' && url) {
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.allow = 'microphone; autoplay';
+    body.appendChild(f);
+  } else {
+    body.innerHTML = `
+      <div class="modal-placeholder">
+        <div class="modal-icon">${icon}</div>
+        <h3>${title}</h3>
+        <p>${desc}</p>
+        <span class="modal-badge">Preview Coming Soon</span>
+      </div>`;
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  const modal = document.getElementById('projectModal');
+  modal.classList.remove('open');
+  document.getElementById('modalBody').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 (function() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
