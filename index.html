@@ -730,11 +730,8 @@
       <div class="card purple" data-delay="2">
         <div class="card-num">003 // SEARCH</div>
         <h3 class="card-title">Truegle</h3>
-        <div class="card-preview" onclick="openModal('Truegle','','placeholder','🔍','Privacy-first search engine. Interactive preview coming soon.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">🔍</div>
-            <p>Preview coming soon</p>
-          </div>
+        <div class="card-preview" onclick="openModal('Truegle','/apps/truegle/index.html','iframe')">
+          <iframe src="/apps/truegle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Next‑gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
@@ -758,11 +755,8 @@
       <div class="card gold" data-delay="4">
         <div class="card-num">005 // BARBERSHOP</div>
         <h3 class="card-title">Whistle Stop</h3>
-        <div class="card-preview" onclick="openModal('Whistle Stop','','placeholder','💈','Barber & Beauty shop platform. Preview coming soon.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">💈</div>
-            <p>Preview coming soon</p>
-          </div>
+        <div class="card-preview" onclick="openModal('Whistle Stop','/apps/whistle-stop/index.html','iframe')">
+          <iframe src="/apps/whistle-stop/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Decentralized micro‑blogging for communities. Concept stage.</p>
@@ -859,7 +853,7 @@
 
       <div class="logo-slot">
         <div class="logo-placeholder">
-          <img src="/brands/Gemini_Generated_Image_r23jb6r23jb6r23j.png" alt="Frugle"/>
+          <img src="/brands/frugle.png" alt="Frugle"/>
         </div>
         <p class="logo-slot-name">Frugle</p>
       </div>
@@ -890,13 +884,6 @@
           <img src="/brands/481089662_1619933329400246_4269349465778689922_n.jpg" alt="DopeTunes"/>
         </div>
         <p class="logo-slot-name">DopeTunes</p>
-      </div>
-
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/attachment(8) copy.jpg" alt="TrumpAFi Poster"/>
-        </div>
-        <p class="logo-slot-name">TrumpAFi — Poster</p>
       </div>
 
     </div>
@@ -1247,7 +1234,7 @@ import * as THREE from 'three';
     discCtx.fillStyle = atmo;
     discCtx.fillRect(0, 0, 512, 512);
 
-    const CX = 256, CY = 256; // true canvas center
+    const CX = 148, CY = 256; // sphere front face UV center is ~75% across = x≈384, but we offset left
     const fontSize = 152;
     discCtx.font = `900 ${fontSize}px Orbitron, sans-serif`;
 
