@@ -1354,39 +1354,8 @@ import * as THREE from 'three';
   });
 })();
 
-// modal system
-function openModal(title, url, type, icon='', desc='') {
-  const modal = document.getElementById('projectModal');
-  const body  = document.getElementById('modalBody');
-  const tEl   = document.getElementById('modalTitle');
-  tEl.textContent = title;
-  body.innerHTML = '';
-  if (type === 'iframe' && url) {
-    const f = document.createElement('iframe');
-    f.src = url;
-    f.allow = 'microphone; autoplay';
-    body.appendChild(f);
-  } else {
-    body.innerHTML = `
-      <div class="modal-placeholder">
-        <div class="modal-icon">${icon}</div>
-        <h3>${title}</h3>
-        <p>${desc}</p>
-        <span class="modal-badge">Preview Coming Soon</span>
-      </div>`;
-  }
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  const modal = document.getElementById('projectModal');
-  modal.classList.remove('open');
-  document.getElementById('modalBody').innerHTML = '';
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+// modal — see plain <script> block below
+document.addEventListener('keydown', e => { if (e.key === 'Escape') window.closeModal(); });
 (function() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -1411,6 +1380,39 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
   }, { threshold: 0.15 });
   document.querySelectorAll('.logo-slot').forEach(s => slotObserver.observe(s));
 })();
+</script>
+
+<!-- modal system in plain script so onclick handlers can always reach it -->
+<script>
+function openModal(title, url, type, icon, desc) {
+  icon = icon || ''; desc = desc || '';
+  const modal = document.getElementById('projectModal');
+  const body  = document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent = title;
+  body.innerHTML = '';
+  if (type === 'iframe' && url) {
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.allow = 'microphone; autoplay';
+    body.appendChild(f);
+  } else {
+    body.innerHTML = `
+      <div class="modal-placeholder">
+        <div class="modal-icon">${icon}</div>
+        <h3>${title}</h3>
+        <p>${desc}</p>
+        <span class="modal-badge">Preview Coming Soon</span>
+      </div>`;
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('projectModal').classList.remove('open');
+  document.getElementById('modalBody').innerHTML = '';
+  document.body.style.overflow = '';
+}
 </script>
 
 </body>

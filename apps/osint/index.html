@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Harassment Detector - Safety First</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --danger: #f72585;
+            --warning: #f9c74f;
+            --success: #4cc9f0;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .safety-banner {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        input, textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #3651d4;
+        }
+        
+        button.danger {
+            background: var(--danger);
+        }
+        
+        button.danger:hover {
+            background: #d61a6b;
+        }
+        
+        .results-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .risk-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        
+        .risk-critical { background: #f72585; color: white; }
+        .risk-high { background: #f9c74f; color: #333; }
+        .risk-medium { background: #4cc9f0; color: #333; }
+        .risk-low { background: #2ecc71; color: white; }
+        
+        .evidence-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .social-icon.found {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .recommendations {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .recommendations ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .recommendations li {
+            margin: 5px 0;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ OSINT Harassment Detector</h1>
+            <p>Safe, Private, Evidence-Grade Investigations</p>
+        </div>
+        
+        <div class="safety-banner">
+            ⚖️ IMPORTANT: This tool is for documenting harassment evidence. 
+            All data is stored locally. If you're in immediate danger, call 911.
+        </div>
+        
+        <div class="card-grid">
+            <!-- Phone Number Card -->
+            <div class="card">
+                <h3>📱 Phone Number Investigation</h3>
+                <p>Check if a phone number is linked to social media accounts, 
+                   verify carrier info, and find associated profiles.</p>
+                <div class="input-group">
+                    <input type="text" id="phone-input" placeholder="Phone number (e.g., +12135551234)" 
+                           pattern="^\+[1-9]\d{1,14}$">
+                    <input type="text" id="first-name-input" placeholder="First name (optional)">
+                    <button onclick="analyzePhone()">🔍 Investigate Phone</button>
+                </div>
+            </div>
+            
+            <!-- Text Analysis Card -->
+            <div class="card">
+                <h3>📝 Text Analysis</h3>
+                <p>Analyze messages, emails, or social media posts for 
+                   harassment, threats, and personal information exposure.</p>
+                <div class="input-group">
+                    <textarea id="text-input" placeholder="Paste text to analyze..."></textarea>
+                    <button onclick="analyzeText()">📊 Analyze Text</button>
+                </div>
+            </div>
+            
+            <!-- Username Card -->
+            <div class="card">
+                <h3>👤 Username Search</h3>
+                <p>Find where a username is used across social media platforms 
+                   and online services.</p>
+                <div class="input-group">
+                    <input type="text" id="username-input" placeholder="Username">
+                    <button onclick="analyzeUsername()">🔎 Search Username</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Panel -->
+        <div class="results-panel" id="results-panel" style="display: none;">
+            <div class="results-header">
+                <h2>📋 Investigation Results</h2>
+                <span class="risk-badge" id="risk-badge">Analyzing...</span>
+            </div>
+            
+            <div id="results-content"></div>
+            
+            <div class="export-buttons">
+                <button onclick="exportJSON()">📥 Download JSON Report</button>
+                <button class="danger" onclick="printResults()">🖨️ Print Evidence Package</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentResults = null;
+        let currentReportId = null;
+        
+        async function analyzePhone() {
+            const phone = document.getElementById('phone-input').value;
+            const firstName = document.getElementById('first-name-input').value;
+            
+            if (!phone) {
+                alert('Please enter a phone number');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/analyze/phone', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({phone, first_name: firstName})
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentResults = data.results;
+                    currentReportId = data.report_id;
+                    displayPhoneResults(data.results);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Analysis failed: ' + error);
+            }
+            
+            hideLoading();
+        }
+        
+        async function analyzeText() {
+            const text = document.getElementById('text-input').value;
+            
+            if (!text) {
+                alert('Please enter text to analyze');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/analyze/text', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text})
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentResults = data.results;
+                    currentReportId = data.report_id;
+                    displayTextResults(data.results);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Analysis failed: ' + error);
+            }
+            
+            hideLoading();
+        }
+        
+        async function analyzeUsername() {
+            const username = document.getElementById('username-input').value;
+            
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/analyze/username', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username})
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentResults = data.results;
+                    currentReportId = data.report_id;
+                    displayUsernameResults(data.results);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Analysis failed: ' + error);
+            }
+            
+            hideLoading();
+        }
+        
+        function displayPhoneResults(results) {
+            const panel = document.getElementById('results-panel');
+            const content = document.getElementById('results-content');
+            const riskBadge = document.getElementById('risk-badge');
+            
+            // Set risk level
+            const riskScore = results.correlation_score || 0;
+            if (riskScore > 0.7) {
+                riskBadge.className = 'risk-badge risk-critical';
+                riskBadge.textContent = 'CRITICAL - Take Action';
+            } else if (riskScore > 0.4) {
+                riskBadge.className = 'risk-badge risk-high';
+                riskBadge.textContent = 'HIGH - Investigate Immediately';
+            } else if (riskScore > 0.2) {
+                riskBadge.className = 'risk-badge risk-medium';
+                riskBadge.textContent = 'MEDIUM - Monitor';
+            } else {
+                riskBadge.className = 'risk-badge risk-low';
+                riskBadge.textContent = 'LOW - No Immediate Threat';
+            }
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3>Phone: ${results.target}</h3>
+                    <p>Format: ${results.formats.international || results.target}</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>📡 Carrier Information</h4>
+                        <p><strong>Carrier:</strong> ${results.carrier_info.carrier || 'Unknown'}</p>
+                        <p><strong>Line Type:</strong> ${results.carrier_info.line_type || 'Unknown'}</p>
+                        <p><strong>Country:</strong> ${results.carrier_info.country || 'Unknown'}</p>
+                    </div>
+                    
+                    <div>
+                        <h4>📍 Location Information</h4>
+                        <p><strong>Location:</strong> ${results.location_info.geocoded_location || 'Unknown'}</p>
+                        <p><strong>Timezone:</strong> ${results.location_info.timezones?.[0] || 'Unknown'}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Social Media Presence
+            if (results.social_presence) {
+                html += '<h4 style="margin-top: 20px;">🌐 Social Media Presence</h4>';
+                html += '<div class="social-icons">';
+                
+                const platforms = {
+                    whatsapp: '💬', telegram: '✈️', facebook: '📘', instagram: '📷',
+                    twitter: '🐦', linkedin: '💼', snapchat: '👻', tiktok: '🎵',
+                    signal: '🔒', viber: '📞', discord: '🎮', skype: '📱'
+                };
+                
+                for (const [platform, icon] of Object.entries(platforms)) {
+                    const found = results.social_presence[platform]?.registered === true;
+                    html += `<div class="social-icon ${found ? 'found' : ''}" 
+                                 title="${platform}: ${found ? 'Account found' : 'Not found'}">
+                                ${icon}
+                            </div>`;
+                }
+                
+                html += '</div>';
+            }
+            
+            // Evidence items
+            if (results.evidence?.findings_summary?.length > 0) {
+                html += '<h4 style="margin-top: 20px;">📌 Evidence Found</h4>';
+                results.evidence.findings_summary.forEach(item => {
+                    html += `<div class="evidence-item">🔍 ${item}</div>`;
+                });
+            }
+            
+            // Correlation factors
+            if (results.correlation_factors?.length > 0) {
+                html += '<h4 style="margin-top: 20px;">🎯 Correlation Factors</h4>';
+                html += '<ul>';
+                results.correlation_factors.forEach(factor => {
+                    html += `<li>${factor}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Recommendations
+            html += `
+                <div class="recommendations">
+                    <h4>🛡️ Safety Recommendations</h4>
+                    <ul>
+                        <li>Save screenshots of all findings (use the download button)</li>
+                        <li>Document dates and times of suspicious activity</li>
+                        <li>Share this report with law enforcement if needed</li>
+                        <li>Consider blocking the number on all platforms</li>
+                        <li>Keep a log of all future contacts from this number</li>
+                    </ul>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            panel.style.display = 'block';
+        }
+        
+        function displayTextResults(results) {
+            const panel = document.getElementById('results-panel');
+            const content = document.getElementById('results-content');
+            const riskBadge = document.getElementById('risk-badge');
+            
+            const riskScore = results.risk_summary?.overall_risk_score || 0;
+            if (riskScore > 0.7) {
+                riskBadge.className = 'risk-badge risk-critical';
+                riskBadge.textContent = 'CRITICAL - Take Action';
+            } else if (riskScore > 0.4) {
+                riskBadge.className = 'risk-badge risk-high';
+                riskBadge.textContent = 'HIGH - Investigate Immediately';
+            } else if (riskScore > 0.2) {
+                riskBadge.className = 'risk-badge risk-medium';
+                riskBadge.textContent = 'MEDIUM - Monitor';
+            } else {
+                riskBadge.className = 'risk-badge risk-low';
+                riskBadge.textContent = 'LOW - No Immediate Threat';
+            }
+            
+            let html = `
+                <div>
+                    <h3>Risk Level: ${results.risk_summary?.risk_level || 'Unknown'}</h3>
+                    <p>${results.risk_summary?.recommendation || ''}</p>
+                </div>
+            `;
+            
+            if (results.risk_summary?.indicators?.length > 0) {
+                html += '<h4>⚠️ Risk Indicators</h4><ul>';
+                results.risk_summary.indicators.forEach(indicator => {
+                    html += `<li>${indicator}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (results.extracted_identifiers) {
+                html += '<h4>📋 Extracted Information</h4>';
+                if (results.extracted_identifiers.ips?.length > 0) {
+                    html += `<p><strong>IPs:</strong> ${results.extracted_identifiers.ips.join(', ')}</p>`;
+                }
+                if (results.extracted_identifiers.emails?.length > 0) {
+                    html += `<p><strong>Emails:</strong> ${results.extracted_identifiers.emails.join(', ')}</p>`;
+                }
+                if (results.extracted_identifiers.usernames?.length > 0) {
+                    html += `<p><strong>Usernames:</strong> ${results.extracted_identifiers.usernames.join(', ')}</p>`;
+                }
+            }
+            
+            content.innerHTML = html;
+            panel.style.display = 'block';
+        }
+        
+        function displayUsernameResults(results) {
+            const panel = document.getElementById('results-panel');
+            const content = document.getElementById('results-content');
+            const riskBadge = document.getElementById('risk-badge');
+            
+            const riskScore = results.risk_summary?.overall_risk_score || 0;
+            if (riskScore > 0.7) {
+                riskBadge.className = 'risk-badge risk-critical';
+                riskBadge.textContent = 'CRITICAL - Take Action';
+            } else if (riskScore > 0.4) {
+                riskBadge.className = 'risk-badge risk-high';
+                riskBadge.textContent = 'HIGH - Investigate Immediately';
+            } else if (riskScore > 0.2) {
+                riskBadge.className = 'risk-badge risk-medium';
+                riskBadge.textContent = 'MEDIUM - Monitor';
+            } else {
+                riskBadge.className = 'risk-badge risk-low';
+                riskBadge.textContent = 'LOW - No Immediate Threat';
+            }
+            
+            let html = '<h3>Profiles Found</h3>';
+            
+            if (results.agent_results?.social?.profiles_found?.length > 0) {
+                results.agent_results.social.profiles_found.forEach(profile => {
+                    html += `
+                        <div class="evidence-item">
+                            <strong>${profile.platform}</strong><br>
+                            <a href="${profile.url}" target="_blank">${profile.url}</a><br>
+                            Confidence: ${profile.confidence}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p>No profiles found for this username.</p>';
+            }
+            
+            content.innerHTML = html;
+            panel.style.display = 'block';
+        }
+        
+        function exportJSON() {
+            if (!currentResults || !currentReportId) return;
+            
+            const dataStr = JSON.stringify(currentResults, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `report_${currentReportId}`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        function printResults() {
+            if (!currentResults) return;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Harassment Evidence Report</title>
+                        <style>
+                            body { font-family: Arial; padding: 20px; }
+                            h1 { color: #4361ee; }
+                            .evidence { border-left: 4px solid #f72585; padding: 10px; margin: 10px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Harassment Evidence Report</h1>
+                        <p>Generated: ${new Date().toLocaleString()}</p>
+                        <pre>${JSON.stringify(currentResults, null, 2)}</pre>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function showLoading() {
+            // Add loading indicators to buttons
+        }
+        
+        function hideLoading() {
+            // Remove loading indicators
+        }
+    </script>
+</body>
+</html>
