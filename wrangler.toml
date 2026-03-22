@@ -1,0 +1,20 @@
+name = "o87-chat"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Environment variables (secrets - set with wrangler secret)
+# OLLAMA_API_KEY - Your Ollama API key
+# OLLAMA_BASE_URL - Ollama API base URL (e.g., https://api.ollama.ai)
+
+[vars]
+# Non-sensitive configuration
+DEFAULT_MODEL = "llama3.2"
+DEFAULT_TEMPERATURE = 0.7
+
+# Production environment
+[env.production]
+name = "o87-chat-prod"
+
+# Development environment  
+[env.dev]
+name = "o87-chat-dev"

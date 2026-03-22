@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truegle - Unbiased Search</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 600px;
+    }
+    .logo {
+      font-size: 4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00D4FF, #6C5CE7, #FF6B6B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      letter-spacing: -0.05em;
+    }
+    .tagline {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2rem;
+    }
+    .search-box {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(10px);
+      margin-bottom: 2rem;
+    }
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    .search-box input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+    .search-box button {
+      background: linear-gradient(135deg, #00D4FF, #6C5CE7);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .search-box button:hover {
+      transform: scale(1.1);
+    }
+    .search-box button svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .feature {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .status {
+      margin-top: 3rem;
+      padding: 1rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: rgba(0, 212, 255, 0.9);
+    }
+    .error-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: rgba(255, 107, 107, 0.9);
+    }
+    @media (max-width: 640px) {
+      .features { grid-template-columns: 1fr; }
+      .logo { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="logo">Truegle</h1>
+    <p class="tagline">The unbiased, transparent, and secure search engine</p>
+    
+    <div class="search-box">
+      <input type="text" placeholder="Search without bias..." id="searchInput">
+      <button onclick="handleSearch()">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </button>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">No Tracking</div>
+        <div class="feature-desc">Your searches stay private</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚖️</div>
+        <div class="feature-title">Unbiased</div>
+        <div class="feature-desc">Multiple perspectives</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Transparent</div>
+        <div class="feature-desc">See how results rank</div>
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      ✓ Truegle is loading...
+    </div>
+
+    <div class="error-message" id="errorMessage" style="display: none;"></div>
+  </div>
+
+  <script>
+    // Check if we're being loaded in an iframe (portfolio modal)
+    const isInIframe = window.self !== window.top;
+    
+    // Status check
+    const statusEl = document.getElementById('status');
+    const errorEl = document.getElementById('errorMessage');
+    
+    // Try to detect the actual app load status
+    setTimeout(() => {
+      const assetsLoaded = document.querySelector('script[src*="index-"]') !== null;
+      if (assetsLoaded) {
+        statusEl.innerHTML = '✓ Truegle search interface loaded successfully';
+        statusEl.style.background = 'rgba(0, 255, 136, 0.1)';
+        statusEl.style.borderColor = 'rgba(0, 255, 136, 0.3)';
+        statusEl.style.color = 'rgba(0, 255, 136, 0.9)';
+      } else {
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = '<strong>⚠️ Asset Loading Issue</strong><br>The full Truegle app assets may not be loading correctly. This is a placeholder page.';
+      }
+    }, 1000);
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value;
+      if (query) {
+        statusEl.innerHTML = `🔍 Searching for: "${query}"...<br><small>Full search functionality coming soon.</small>`;
+        // In production, this would redirect to actual search results
+        // window.location.href = `/search?q=${encodeURIComponent(query)}`;
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSearch();
+    });
+
+    // If the full app is available, it will override this behavior
+    window.trueglePlaceholder = true;
+  </script>
+</body>
+</html>
