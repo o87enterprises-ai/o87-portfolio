@@ -50,6 +50,13 @@
     .header-logo {
       font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem;
       letter-spacing:0.28em; text-decoration:none;
+      display:inline-flex; align-items:baseline;
+    }
+    .header-logo .hl-o {
+      color:#ffffff;
+      filter:drop-shadow(0 0 8px rgba(200,230,255,0.7));
+    }
+    .header-logo .hl-87 {
       background:linear-gradient(135deg,#FF4B1F 0%,#E0306A 45%,#1040C8 100%);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
       filter:drop-shadow(0 0 14px rgba(255,75,31,0.4));
@@ -78,19 +85,6 @@
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center; padding-left:2rem; padding-right:2rem; padding-bottom:5rem;
       position:relative;
-    }
-    .hero-badge {
-      display:inline-flex; align-items:center; gap:0.5rem;
-      font-family:'Orbitron',sans-serif; font-size:0.55rem; letter-spacing:0.35em; text-transform:uppercase;
-      color:var(--cyan); border:1px solid rgba(0,242,255,0.3); border-radius:999px;
-      padding:0.4rem 1.1rem; margin-bottom:2rem;
-      background:rgba(0,242,255,0.04);
-      opacity:0; animation:riseIn 0.7s 0.2s ease forwards;
-    }
-    .hero-badge::before {
-      content:''; width:6px; height:6px; border-radius:50%;
-      background:var(--cyan); box-shadow:0 0 8px var(--cyan);
-      animation:pulse 2s ease-in-out infinite;
     }
     @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.4; transform:scale(0.7); } }
 
@@ -346,7 +340,7 @@
 <div class="nebula"></div>
 
 <header>
-  <a href="#" class="header-logo">O87</a>
+  <a href="#" class="header-logo"><span class="hl-o">o</span><span class="hl-87">87</span></a>
   <nav>
     <a href="#services">Services</a>
     <a href="#projects">Work</a>
@@ -359,7 +353,9 @@
 
   <!-- ══ HERO ══ -->
   <section class="hero" id="hero">
-    <div class="hero-badge">Deep Space Development</div>
+    <div class="hero-logo-mark" style="margin-bottom:2.2rem; opacity:0; animation:riseIn 0.7s 0.2s ease forwards;">
+      <span class="logo-o" style="font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(2.2rem,5vw,3.2rem); letter-spacing:-0.02em; line-height:1;">o</span><span class="logo-87" style="font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(2.2rem,5vw,3.2rem); letter-spacing:-0.02em; line-height:1;">87</span>
+    </div>
     <div class="logo-3d-area">
       <div class="logo-text-overlay">
         <span class="logo-o">o</span><span class="logo-87">87</span>
@@ -667,16 +663,16 @@ import * as THREE from 'three';
     starLayers.push(pts);
   }
 
-  // Layer 1 — many small distant white/blue stars
-  addStarLayer(1600, 95, 0.55, 0.35, [
+  // Layer 1 — many tiny distant white/blue stars (hyperrealistic pinpricks)
+  addStarLayer(2200, 95, 0.06, 0.35, [
     [1.0, 1.0, 1.0], [0.85, 0.92, 1.0], [0.9, 0.95, 1.0],
   ]);
-  // Layer 2 — medium, slight colour
-  addStarLayer(500, 65, 0.9, 1.1, [
+  // Layer 2 — mid-field, subtle colour variation
+  addStarLayer(600, 65, 0.12, 1.1, [
     [1.0, 1.0, 1.0], [0.7, 0.85, 1.0], [1.0, 0.8, 0.55], [0.75, 0.55, 1.0], [0.45, 0.9, 1.0],
   ]);
-  // Layer 3 — close bright
-  addStarLayer(120, 38, 1.6, 2.6, [
+  // Layer 3 — foreground bright hero stars, still small but noticeably larger
+  addStarLayer(140, 38, 0.28, 2.6, [
     [1.0, 1.0, 1.0], [0.55, 0.8, 1.0], [1.0, 0.65, 0.35], [0.65, 0.45, 1.0],
   ]);
 
@@ -724,7 +720,8 @@ import * as THREE from 'three';
   planetGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(4.8,32), atmosMat));
 
   const rGrp = new THREE.Group();
-  rGrp.rotation.x = Math.PI*0.4; rGrp.rotation.z = 0.2;
+  rGrp.rotation.x = Math.PI * 0.5; // equatorial — flat horizontal plane
+  rGrp.rotation.z = 0;
   planetGroup.add(rGrp);
 
   const rMat = new THREE.ShaderMaterial({
