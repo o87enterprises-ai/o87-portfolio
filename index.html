@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>o87 — beyond the possible</title>
-  <meta name="description" content="o87Dev — forging tools at the edge of what's possible." />
+  <meta name="description" content="o87Dev — software engineering, security, and product development." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
   <script type="importmap">
   {
     "imports": {
@@ -16,33 +16,28 @@
     }
   }
   </script>
-  
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --void: #04030d;
-      --cyan: #00f2ff;
+      --void:   #04030d;
+      --cyan:   #00f2ff;
       --purple: #c050ff;
-      --gold: #ffcc44;
-      --white: #ecebf8;
-      --muted: rgba(236, 235, 248, 0.42);
-      --ring-glow: rgba(192, 80, 255, 0.6);
-      --transition-card: 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+      --gold:   #ffcc44;
+      --white:  #ecebf8;
+      --muted:  rgba(236,235,248,0.42);
+      --glass:  rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --transition-card: 0.4s cubic-bezier(0.2,0.9,0.3,1);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--void);
       color: var(--white);
-      font-family: 'Rajdhani', sans-serif;
+      font-family: 'Inter', 'Rajdhani', sans-serif;
       overflow-x: hidden;
       line-height: 1.5;
     }
@@ -67,70 +62,86 @@
       mix-blend-mode: screen;
     }
 
-    .page {
-      position: relative;
-      z-index: 10;
+    .page { position: relative; z-index: 10; }
+
+    /* ─── FIXED HEADER ─── */
+    header {
+      position: fixed;
+      top: 0; width: 100%;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(4,3,13,0.7);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
     }
 
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 0.3em;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--cyan); text-shadow: 0 0 16px rgba(0,242,255,0.7); }
+
+    nav { display: flex; gap: 2rem; align-items: center; }
+
+    nav a {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--cyan); }
+
+    .nav-cta {
+      border: 1px solid rgba(0,242,255,0.4) !important;
+      color: var(--cyan) !important;
+      padding: 0.4rem 1.1rem;
+      border-radius: 999px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: rgba(0,242,255,0.08) !important; }
+
+    @media (max-width: 768px) { nav a:not(.nav-cta) { display: none; } }
+
+    /* ─── HERO ─── */
     .hero {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 5rem 2rem 8rem;
+      padding: 7rem 2rem 6rem;
       text-align: center;
       position: relative;
     }
 
-    .logo-3d {
-      position: relative;
-      width: min(680px, 90vw);
-      margin: 0 auto 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      filter: drop-shadow(0 0 40px rgba(0,242,255,0.15));
-    }
-
-    .logo-img {
-      width: 100%;
-      height: auto;
-      display: block;
-      mix-blend-mode: lighten;
-      animation: logoFloat 6s ease-in-out infinite;
-    }
-
-    .logo-svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      animation: logoFloat 6s ease-in-out infinite;
-    }
-
-    @keyframes logoFloat {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-8px) scale(1.005); }
-    }
-
-    /* ── o87 HTML overlay ── */
     .logo-text-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -58%);
       font-family: 'Orbitron', sans-serif;
       font-weight: 900;
-      font-size: clamp(3.5rem, 10vw, 7rem);
+      font-size: clamp(4rem, 12vw, 8.5rem);
       letter-spacing: -0.03em;
       pointer-events: none;
       z-index: 15;
       line-height: 1;
+      margin-bottom: 1.8rem;
       animation: logoFloat 6s ease-in-out infinite;
     }
 
     .logo-o {
-      /* crescent moon: white fading to silver-blue */
       background: radial-gradient(ellipse at 65% 65%, #ffffff 0%, #c8dff0 45%, #7aaac8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -146,48 +157,91 @@
       filter: drop-shadow(0 0 22px rgba(255,75,31,0.6)) drop-shadow(0 0 44px rgba(16,64,200,0.4));
     }
 
-    .caption {
-      text-align: center;
-      opacity: 0;
-      animation: riseIn 0.9s 0.7s ease forwards;
-    }
-
-    .caption-title {
+    .hero-eyebrow {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2rem, 5vw, 2.8rem);
-      font-weight: 900;
-      letter-spacing: 0.15em;
-      background: linear-gradient(135deg, #FF4B1F 0%, #D94A6A 45%, #1040C8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 25px rgba(255,75,31,0.5));
-      margin-bottom: 0.3rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.55em;
       text-transform: uppercase;
-    }
-
-    .caption-sub {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 0.6em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.6rem;
-    }
-
-    .caption-tagline {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 500;
-      letter-spacing: 0.28em;
       color: var(--cyan);
-      text-shadow: 0 0 18px rgba(0,242,255,0.7);
+      text-shadow: 0 0 14px rgba(0,242,255,0.6);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: riseIn 0.8s 0.3s ease forwards;
     }
+
+    .hero-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: riseIn 0.8s 0.6s ease forwards;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: riseIn 0.8s 0.9s ease forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: riseIn 0.8s 1.1s ease forwards;
+    }
+
+    .btn-primary {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 0.85rem 2.2rem;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #00d4ff, #8040ff);
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 0 30px rgba(0,212,255,0.3);
+    }
+
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-ghost {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 0.85rem 2.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--white);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
 
     .scroll-hint {
       position: absolute;
-      bottom: 2.5rem;
-      left: 50%;
+      bottom: 2.5rem; left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
@@ -199,20 +253,20 @@
       text-transform: uppercase;
       color: var(--muted);
       opacity: 0;
-      animation: riseIn 0.9s 1.6s ease forwards, bob 2.8s 2.5s ease-in-out infinite;
+      animation: riseIn 0.9s 1.8s ease forwards, bob 2.8s 2.5s ease-in-out infinite;
     }
 
     .scroll-hint::after {
       content: '';
-      width: 1px;
-      height: 48px;
+      width: 1px; height: 48px;
       background: linear-gradient(to bottom, var(--cyan), transparent);
     }
 
-    .projects {
+    /* ─── SHARED SECTION ─── */
+    .section-inner {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 5rem 2rem 8rem;
+      padding: 5rem 2rem;
     }
 
     .section-label {
@@ -235,6 +289,7 @@
       text-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
 
+    /* ─── PROJECT CARDS ─── */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
@@ -242,12 +297,12 @@
     }
 
     .card {
-      --a: 0, 242, 255;
+      --a: 0,242,255;
       position: relative;
-      background: rgba(6, 5, 18, 0.75);
+      background: rgba(6,5,18,0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(var(--a), 0.15);
+      border: 1px solid rgba(var(--a),0.15);
       border-radius: 24px;
       padding: 2.2rem 2rem;
       overflow: hidden;
@@ -258,17 +313,14 @@
       box-shadow: 0 20px 40px -20px rgba(0,0,0,0.8);
     }
 
-    .card.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .card.visible { opacity: 1; transform: translateY(0); }
 
     .card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(var(--a), 0.9) 20%, rgba(var(--a), 0.4) 80%, transparent);
+      background: linear-gradient(90deg, transparent, rgba(var(--a),0.9) 20%, rgba(var(--a),0.4) 80%, transparent);
       opacity: 0;
       transition: opacity 0.4s;
     }
@@ -279,21 +331,20 @@
       bottom: -20px; right: -20px;
       width: 140px; height: 140px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(var(--a), 0.1), transparent 80%);
+      background: radial-gradient(circle, rgba(var(--a),0.1), transparent 80%);
       z-index: 0;
     }
 
     .card:hover {
-      border-color: rgba(var(--a), 0.5);
-      background: rgba(var(--a), 0.08);
-      box-shadow: 0 30px 60px -20px rgba(var(--a), 0.3), 0 0 0 1px rgba(var(--a), 0.2) inset;
+      border-color: rgba(var(--a),0.5);
+      background: rgba(var(--a),0.08);
+      box-shadow: 0 30px 60px -20px rgba(var(--a),0.3), 0 0 0 1px rgba(var(--a),0.2) inset;
       transform: translateY(-6px) scale(1.01) !important;
     }
 
     .card:hover::before { opacity: 1; }
-
-    .purple { --a: 192, 80, 255; }
-    .gold   { --a: 255, 204, 68; }
+    .purple { --a: 192,80,255; }
+    .gold   { --a: 255,204,68; }
 
     .card-num {
       font-family: 'Orbitron', sans-serif;
@@ -301,8 +352,7 @@
       letter-spacing: 0.3em;
       color: var(--muted);
       margin-bottom: 1.2rem;
-      position: relative;
-      z-index: 2;
+      position: relative; z-index: 2;
     }
 
     .card-title {
@@ -311,27 +361,23 @@
       font-weight: 700;
       color: var(--white);
       margin-bottom: 0.9rem;
-      position: relative;
-      z-index: 2;
+      position: relative; z-index: 2;
       letter-spacing: -0.02em;
     }
 
     .card-desc {
       font-size: 1rem;
-      font-weight: 400;
       line-height: 1.7;
       color: rgba(236,235,248,0.75);
       margin-bottom: 2rem;
-      position: relative;
-      z-index: 2;
+      position: relative; z-index: 2;
     }
 
     .card-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 2;
+      position: relative; z-index: 2;
     }
 
     .badge {
@@ -343,12 +389,11 @@
       border-radius: 40px;
       border: 1px solid currentColor;
       background: rgba(0,0,0,0.2);
-      backdrop-filter: blur(4px);
     }
 
-    .live   { color: var(--cyan); }
-    .dev    { color: var(--purple); }
-    .wip    { color: var(--gold); }
+    .live { color: var(--cyan); }
+    .dev  { color: var(--purple); }
+    .wip  { color: var(--gold); }
 
     .card-link {
       font-family: 'Orbitron', sans-serif;
@@ -358,37 +403,160 @@
       color: rgb(var(--a));
       text-decoration: none;
       opacity: 0.7;
-      transition: opacity 0.2s, text-shadow 0.2s;
+      transition: opacity 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
     }
 
-    .card-link:hover {
-      opacity: 1;
-      text-shadow: 0 0 14px rgba(var(--a), 0.9);
-    }
-
-    .card-link::after {
-      content: '→';
-      font-size: 1.1rem;
-      line-height: 1;
-      transition: transform 0.2s;
-    }
-
+    .card-link:hover { opacity: 1; }
+    .card-link::after { content: '→'; font-size: 1.1rem; transition: transform 0.2s; }
     .card-link:hover::after { transform: translateX(4px); }
 
-    /* ══ BRANDING SECTION ══ */
-    .branding {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem 2rem 8rem;
+    .card-preview {
+      position: relative;
+      width: 100%; height: 120px;
+      margin: 0.8rem 0 1.2rem;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(var(--a),0.15);
+      transition: height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s;
+      background: rgba(0,0,0,0.4);
     }
 
+    .card-preview:hover { height: 180px; border-color: rgba(var(--a),0.5); }
+
+    .card-preview iframe {
+      width: 200%; height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+      border: none; pointer-events: none;
+    }
+
+    .card-preview .preview-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.5rem;
+      background: linear-gradient(135deg, rgba(var(--a),0.06), rgba(0,0,0,0.5));
+    }
+
+    .card-preview .preview-icon { font-size: 1.8rem; opacity: 0.6; }
+
+    .card-preview .preview-placeholder p {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(var(--a),0.7);
+    }
+
+    .card-preview .expand-hint {
+      position: absolute;
+      bottom: 6px; right: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      color: rgba(var(--a),0.6);
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    /* ─── SERVICES ─── */
+    .services-section {
+      background: rgba(0,0,0,0.35);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.4rem;
+      margin-top: 1rem;
+    }
+
+    .service-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem 1.8rem;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+
+    .service-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(0,242,255,0.25);
+      transform: translateY(-4px);
+    }
+
+    .service-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+
+    .service-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+
+    .service-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── CTA ─── */
+    .cta-section { text-align: center; }
+
+    .cta-box {
+      background: rgba(0,242,255,0.04);
+      border: 1px solid rgba(0,242,255,0.15);
+      border-radius: 28px;
+      padding: 4rem 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .cta-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+
+    .cta-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+    }
+
+    .cta-contact a { color: var(--cyan); text-decoration: none; transition: text-shadow 0.2s; }
+    .cta-contact a:hover { text-shadow: 0 0 14px rgba(0,242,255,0.8); }
+
+    /* ─── BRANDING ─── */
     .branding-intro {
       font-family: 'Rajdhani', sans-serif;
       font-size: 1.1rem;
-      font-weight: 400;
       line-height: 1.75;
       color: var(--muted);
       max-width: 560px;
@@ -408,22 +576,17 @@
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
-    .logo-slot.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .logo-slot.visible { opacity: 1; transform: translateY(0); }
 
     .logo-placeholder {
       aspect-ratio: 4/3;
-      background: rgba(6, 5, 18, 0.6);
+      background: rgba(6,5,18,0.6);
       backdrop-filter: blur(12px);
-      border: 1px dashed rgba(192, 80, 255, 0.25);
+      border: 1px dashed rgba(192,80,255,0.25);
       border-radius: 18px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
       position: relative;
       overflow: hidden;
       transition: border-color 0.3s, background 0.3s;
@@ -431,14 +594,21 @@
 
     .logo-placeholder::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: radial-gradient(ellipse at center, rgba(192,80,255,0.04), transparent 70%);
     }
 
     .logo-placeholder:hover {
-      border-color: rgba(192, 80, 255, 0.5);
-      background: rgba(192, 80, 255, 0.04);
+      border-color: rgba(192,80,255,0.5);
+      background: rgba(192,80,255,0.04);
+    }
+
+    .logo-placeholder img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      padding: 0.8rem;
+      position: relative; z-index: 2;
+      border-radius: 14px;
     }
 
     .logo-slot-name {
@@ -451,144 +621,19 @@
       margin-top: 0.6rem;
     }
 
-    .logo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 0.8rem;
-      position: relative;
-      z-index: 2;
-      border-radius: 14px;
-    }
-
-    .logo-slot-num {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.35em;
-      color: rgba(192, 80, 255, 0.45);
-      position: relative;
-      z-index: 2;
-    }
-
-    .logo-slot-label {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(236, 235, 248, 0.2);
-      position: relative;
-      z-index: 2;
-    }
-
-    footer {
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 3rem 2rem;
-      text-align: center;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      position: relative;
-      z-index: 10;
-      background: rgba(4,3,13,0.3);
-      backdrop-filter: blur(8px);
-    }
-
-    footer .glow {
-      color: var(--cyan);
-      text-shadow: 0 0 15px rgba(0,242,255,0.7);
-      font-weight: 500;
-    }
-
-    @keyframes riseIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes bob {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%      { transform: translateX(-50%) translateY(12px); }
-    }
-
-    @media (max-width: 600px) {
-      .card { padding: 1.8rem 1.5rem; }
-      .caption-title { font-size: 1.8rem; letter-spacing: 0.1em; }
-    }
-    /* ══ CARD PREVIEW THUMBNAIL ══ */
-    .card-preview {
-      position: relative;
-      width: 100%;
-      height: 120px;
-      margin: 0.8rem 0 1.2rem;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      border: 1px solid rgba(var(--a), 0.15);
-      transition: height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s;
-      background: rgba(0,0,0,0.4);
-    }
-    .card-preview:hover {
-      height: 180px;
-      border-color: rgba(var(--a), 0.5);
-    }
-    .card-preview iframe {
-      width: 200%;
-      height: 200%;
-      transform: scale(0.5);
-      transform-origin: top left;
-      border: none;
-      pointer-events: none;
-      border-radius: 0;
-    }
-    .card-preview .preview-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, rgba(var(--a),0.06), rgba(0,0,0,0.5));
-    }
-    .card-preview .preview-placeholder .preview-icon {
-      font-size: 1.8rem;
-      opacity: 0.6;
-    }
-    .card-preview .preview-placeholder p {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(var(--a), 0.7);
-    }
-    .card-preview .expand-hint {
-      position: absolute;
-      bottom: 6px;
-      right: 8px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.5rem;
-      letter-spacing: 0.2em;
-      color: rgba(var(--a), 0.6);
-      text-transform: uppercase;
-      pointer-events: none;
-    }
-
-    /* ══ FULLSCREEN MODAL ══ */
+    /* ─── MODAL ─── */
     .project-modal {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       z-index: 1000;
       background: rgba(4,3,13,0.96);
       backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      pointer-events: none;
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
       transition: opacity 0.4s ease;
     }
-    .project-modal.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+
+    .project-modal.open { opacity: 1; pointer-events: all; }
+
     .modal-header {
       display: flex;
       align-items: center;
@@ -597,13 +642,14 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
+
     .modal-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 0.9rem; font-weight: 700;
       color: var(--white);
       letter-spacing: 0.1em;
     }
+
     .modal-close {
       background: none;
       border: 1px solid rgba(255,255,255,0.15);
@@ -616,42 +662,22 @@
       cursor: pointer;
       transition: border-color 0.2s, color 0.2s;
     }
-    .modal-close:hover {
-      border-color: var(--cyan);
-      color: var(--cyan);
-    }
-    .modal-body {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
-    .modal-body iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+
+    .modal-close:hover { border-color: var(--cyan); color: var(--cyan); }
+    .modal-body { flex: 1; overflow: hidden; position: relative; }
+    .modal-body iframe { width: 100%; height: 100%; border: none; }
+
     .modal-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1.2rem;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.2rem;
       color: var(--muted);
     }
+
     .modal-placeholder .modal-icon { font-size: 4rem; opacity: 0.5; }
-    .modal-placeholder h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
-      color: var(--white);
-    }
-    .modal-placeholder p {
-      font-size: 1rem;
-      max-width: 400px;
-      text-align: center;
-      line-height: 1.7;
-    }
+    .modal-placeholder h3 { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--white); }
+    .modal-placeholder p { font-size: 1rem; max-width: 400px; text-align: center; line-height: 1.7; }
+
     .modal-badge {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.6rem;
@@ -663,11 +689,71 @@
       text-transform: uppercase;
     }
 
+    /* ─── CHAT BUBBLE ─── */
+    .chat-bubble {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #00d4ff, #8040ff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0,212,255,0.4);
+      z-index: 90;
+      transition: transform 0.25s, box-shadow 0.25s;
+      text-decoration: none;
+    }
+
+    .chat-bubble:hover {
+      transform: scale(1.1) translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,212,255,0.6);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      position: relative; z-index: 10;
+      background: rgba(4,3,13,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    footer .glow {
+      color: var(--cyan);
+      text-shadow: 0 0 15px rgba(0,242,255,0.7);
+      font-weight: 500;
+    }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-8px) scale(1.005); }
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(12px); }
+    }
+
+    @media (max-width: 600px) {
+      .card { padding: 1.8rem 1.5rem; }
+      .cta-box { padding: 2.5rem 1.5rem; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ══ FULLSCREEN PROJECT MODAL ══ -->
+<!-- ══ MODAL ══ -->
 <div class="project-modal" id="projectModal">
   <div class="modal-header">
     <span class="modal-title" id="modalTitle">Project</span>
@@ -679,226 +765,298 @@
 <canvas id="three-canvas"></canvas>
 <div class="nebula"></div>
 
+<!-- ══ HEADER ══ -->
+<header>
+  <a href="#" class="nav-logo">o<span>87</span></a>
+  <nav>
+    <a href="#projects">Work</a>
+    <a href="#services">Services</a>
+    <a href="#branding">Brands</a>
+    <a href="#contact" class="nav-cta">Get in Touch</a>
+  </nav>
+</header>
+
 <div class="page">
 
-  <section class="hero">
-    <div class="logo-3d" style="display:none;">
-      <img src="o87-logo.png" alt="o87 logo" class="logo-img"/>
-    </div>
-
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="hero">
+    <p class="hero-eyebrow">o87 enterprises</p>
     <div class="logo-text-overlay">
       <span class="logo-o">o</span><span class="logo-87">87</span>
     </div>
-
-    <div class="caption">
-      <p class="caption-sub">deep space development</p>
-      <p class="caption-tagline">infinite universe &nbsp;—&nbsp; infinite possibilities</p>
+    <h1 class="hero-heading">Build. Launch. Scale.</h1>
+    <p class="hero-sub">Software engineering, security research, and product development — from concept to production without compromise.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#services" class="btn-ghost">Our Services</a>
     </div>
-    <div class="scroll-hint">explore</div>
+    <div class="scroll-hint">scroll</div>
   </section>
 
-  <section class="projects">
-    <p class="section-label">— live transmissions</p>
-    <h2 class="section-heading">current projects</h2>
-    <div class="grid">
+  <!-- ══ PROJECTS ══ -->
+  <section id="projects">
+    <div class="section-inner">
+      <p class="section-label">— live transmissions</p>
+      <h2 class="section-heading">current projects</h2>
+      <div class="grid">
 
-      <div class="card" data-delay="0">
-        <div class="card-num">001 // VOICE AI</div>
-        <h3 class="card-title">TrumpAFi</h3>
-        <div class="card-preview" onclick="openModal('TrumpAFi','https://trumpafi.online/?ref=portfolio','iframe')">
-          <iframe src="https://trumpafi.online/?ref=portfolio" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Satirical AI voice chatbot channeling the 45th president's energy. Custom personality engine with real‑time voice generation.</p>
-        <div class="card-footer">
-          <span class="badge live">Live</span>
-          <a href="https://trumpafi.online" target="_blank" class="card-link">visit</a>
-        </div>
-      </div>
-
-      <div class="card gold" data-delay="1">
-        <div class="card-num">002 // AI ASSISTANT</div>
-        <h3 class="card-title">Munch</h3>
-        <div class="card-preview" onclick="openModal('Munch','/apps/munch/index.html','iframe')">
-          <iframe src="/apps/munch/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Intelligent dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <div class="card purple" data-delay="2">
-        <div class="card-num">003 // SEARCH</div>
-        <h3 class="card-title">Truegle</h3>
-        <div class="card-preview" onclick="openModal('Truegle','/apps/truegle/index.html','iframe')">
-          <iframe src="/apps/truegle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Next‑gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <div class="card" data-delay="3">
-        <div class="card-num">004 // MAPS</div>
-        <h3 class="card-title">Truegle Maps</h3>
-        <div class="card-preview" onclick="openModal('Truegle Maps','','placeholder','🗺️','Open-street mapping with AI route optimization. Preview coming soon.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">🗺️</div>
-            <p>Preview coming soon</p>
+        <div class="card" data-delay="0">
+          <div class="card-num">001 // VOICE APP</div>
+          <h3 class="card-title">TrumpAFi</h3>
+          <div class="card-preview" onclick="openModal('TrumpAFi','https://trumpafi.online/?ref=portfolio','iframe')">
+            <iframe src="https://trumpafi.online/?ref=portfolio" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
           </div>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Open‑street based layers with AI‑powered route optimization.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <div class="card gold" data-delay="4">
-        <div class="card-num">005 // BARBERSHOP</div>
-        <h3 class="card-title">Whistle Stop</h3>
-        <div class="card-preview" onclick="openModal('Whistle Stop','/apps/whistle-stop/index.html','iframe')">
-          <iframe src="/apps/whistle-stop/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Decentralized micro‑blogging for communities. Concept stage.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <div class="card purple" data-delay="5">
-        <div class="card-num">006 // QUEUE</div>
-        <h3 class="card-title">Que</h3>
-        <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">📋</div>
-            <p>Preview coming soon</p>
+          <p class="card-desc">Satirical voice chatbot channeling the 45th president's energy. Custom personality engine with real‑time voice generation.</p>
+          <div class="card-footer">
+            <span class="badge live">Live</span>
+            <a href="https://trumpafi.online" target="_blank" class="card-link">visit</a>
           </div>
-          <span class="expand-hint">click to expand</span>
         </div>
-        <p class="card-desc">Smart queue management for events & venues. Backend ready — needs UI.</p>
-        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
-      </div>
 
-      <div class="card" data-delay="6">
-        <div class="card-num">007 // ASTROLOGY</div>
-        <h3 class="card-title">Astrology API</h3>
-        <div class="card-preview" onclick="openModal('Astrology API','/apps/astrology/index.html','iframe')">
-          <iframe src="/apps/astrology/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
+        <div class="card gold" data-delay="1">
+          <div class="card-num">002 // DATING APP</div>
+          <h3 class="card-title">Munch</h3>
+          <div class="card-preview" onclick="openModal('Munch','/apps/munch/index.html','iframe')">
+            <iframe src="/apps/munch/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Smart dating assistant — helps users navigate conversations, craft messages, and understand connections deeper.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
         </div>
-        <p class="card-desc">Celestial data API with AI interpretations. For developers & creatives.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
 
-      <div class="card gold" data-delay="7">
-        <div class="card-num">008 // DEALS</div>
-        <h3 class="card-title">Frugle</h3>
-        <div class="card-preview" onclick="openModal('Frugle','/apps/frugle/index.html','iframe')">
-          <iframe src="/apps/frugle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
+        <div class="card purple" data-delay="2">
+          <div class="card-num">003 // SEARCH</div>
+          <h3 class="card-title">Truegle</h3>
+          <div class="card-preview" onclick="openModal('Truegle','/apps/truegle/index.html','iframe')">
+            <iframe src="/apps/truegle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Next‑gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
         </div>
-        <p class="card-desc">Price comparison & deal hunter. Scraping layer done.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
 
-      <div class="card purple" data-delay="8">
-        <div class="card-num">009 // OSINT</div>
-        <h3 class="card-title">OSINT Tool</h3>
-        <div class="card-preview" onclick="openModal('OSINT Tool','/apps/osint/index.html','iframe')">
-          <iframe src="/apps/osint/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
+        <div class="card" data-delay="3">
+          <div class="card-num">004 // MAPS</div>
+          <h3 class="card-title">Truegle Maps</h3>
+          <div class="card-preview" onclick="openModal('Truegle Maps','','placeholder','🗺️','Open-street mapping with smart route optimization. Preview coming soon.')">
+            <div class="preview-placeholder">
+              <div class="preview-icon">🗺️</div>
+              <p>Preview coming soon</p>
+            </div>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Open‑street based layers with smart route optimization and real‑time data overlays.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
         </div>
-        <p class="card-desc">Open‑source intelligence gathering. Robust backend — frontend contribution welcome.</p>
-        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
-      </div>
 
+        <div class="card gold" data-delay="4">
+          <div class="card-num">005 // BARBERSHOP</div>
+          <h3 class="card-title">Whistle Stop</h3>
+          <div class="card-preview" onclick="openModal('Whistle Stop','/apps/whistle-stop/index.html','iframe')">
+            <iframe src="/apps/whistle-stop/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Full-featured barbershop & beauty platform. Booking, menu management, and client experience tools.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
+        </div>
+
+        <div class="card purple" data-delay="5">
+          <div class="card-num">006 // QUEUE</div>
+          <h3 class="card-title">Que</h3>
+          <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
+            <div class="preview-placeholder">
+              <div class="preview-icon">📋</div>
+              <p>Preview coming soon</p>
+            </div>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Smart queue management for events & venues. Backend ready — needs UI.</p>
+          <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+        </div>
+
+        <div class="card" data-delay="6">
+          <div class="card-num">007 // ASTROLOGY</div>
+          <h3 class="card-title">Astrology API</h3>
+          <div class="card-preview" onclick="openModal('Astrology API','/apps/astrology/index.html','iframe')">
+            <iframe src="/apps/astrology/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Celestial data API with rich interpretations. For developers & creatives building star‑aware apps.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
+        </div>
+
+        <div class="card gold" data-delay="7">
+          <div class="card-num">008 // DEALS</div>
+          <h3 class="card-title">Frugle</h3>
+          <div class="card-preview" onclick="openModal('Frugle','/apps/frugle/index.html','iframe')">
+            <iframe src="/apps/frugle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Price comparison & deal hunter. Scraping layer complete — frontend in progress.</p>
+          <div class="card-footer"><span class="badge dev">In Dev</span></div>
+        </div>
+
+        <div class="card purple" data-delay="8">
+          <div class="card-num">009 // OSINT</div>
+          <h3 class="card-title">OSINT Tool</h3>
+          <div class="card-preview" onclick="openModal('OSINT Tool','/apps/osint/index.html','iframe')">
+            <iframe src="/apps/osint/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+            <span class="expand-hint">click to expand</span>
+          </div>
+          <p class="card-desc">Open‑source intelligence gathering. Robust backend — frontend contribution welcome.</p>
+          <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+        </div>
+
+      </div>
     </div>
   </section>
 
-  <section class="branding">
-    <p class="section-label">— identity systems</p>
-    <h2 class="section-heading">branding & logos</h2>
-    <p class="branding-intro">
-      Crafting visual identities from the ground up — marks that carry weight across every surface, screen, and universe.
-    </p>
-    <div class="logo-showcase">
+  <!-- ══ SERVICES ══ -->
+  <section class="services-section" id="services">
+    <div class="section-inner">
+      <p class="section-label">— what we do</p>
+      <h2 class="section-heading">expert services</h2>
+      <div class="services-grid">
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/truegle.png" alt="Truegle"/>
+        <div class="service-card">
+          <div class="service-icon">⚡</div>
+          <p class="service-label">Development</p>
+          <h3 class="service-title">Web & Software</h3>
+          <p class="service-desc">Full-stack engineering from prototype to production. React, Next.js, FastAPI, Node — built to scale.</p>
         </div>
-        <p class="logo-slot-name">Truegle</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/logo.png" alt="Munch"/>
+        <div class="service-card">
+          <div class="service-icon">🔒</div>
+          <p class="service-label">Security</p>
+          <h3 class="service-title">Pentesting & OSINT</h3>
+          <p class="service-desc">Vulnerability assessment, open-source intelligence gathering, and security hardening for modern systems.</p>
         </div>
-        <p class="logo-slot-name">Munch</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/whistle-stop.png" alt="Whistle Stop"/>
+        <div class="service-card">
+          <div class="service-icon">⚙️</div>
+          <p class="service-label">Automation</p>
+          <h3 class="service-title">Custom Pipelines</h3>
+          <p class="service-desc">Workflow automation, data pipelines, and custom integrations that eliminate repetitive overhead.</p>
         </div>
-        <p class="logo-slot-name">Whistle Stop</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/frugle-v2.png" alt="Frugle"/>
+        <div class="service-card">
+          <div class="service-icon">📈</div>
+          <p class="service-label">Marketing</p>
+          <h3 class="service-title">SEO & Growth</h3>
+          <p class="service-desc">Programmatic SEO, content strategy, and growth systems that compound over time.</p>
         </div>
-        <p class="logo-slot-name">Frugle</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/aura.png" alt="Aura"/>
+        <div class="service-card">
+          <div class="service-icon">🎨</div>
+          <p class="service-label">Design</p>
+          <h3 class="service-title">UI / UX & Branding</h3>
+          <p class="service-desc">Identity systems, interface design, and visual direction that make products impossible to ignore.</p>
         </div>
-        <p class="logo-slot-name">Aura</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/Copilot_20260314_204725.png" alt="TrumpAFi"/>
+        <div class="service-card">
+          <div class="service-icon">🏗️</div>
+          <p class="service-label">Scalability</p>
+          <h3 class="service-title">Enterprise Dashboards</h3>
+          <p class="service-desc">Custom analytics platforms, admin tools, and reporting systems built for enterprise-scale teams.</p>
         </div>
-        <p class="logo-slot-name">TrumpAFi</p>
-      </div>
 
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/Copilot_20260207_121828.png" alt="Whistle Stop Menu"/>
-        </div>
-        <p class="logo-slot-name">Whistle Stop — Menu</p>
       </div>
-
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/460232422_1490612778998969_1088007044468279513_n.jpg" alt="DuckE Duck"/>
-        </div>
-        <p class="logo-slot-name">DuckE Duck</p>
-      </div>
-
-      <div class="logo-slot">
-        <div class="logo-placeholder">
-          <img src="/brands/481089662_1619933329400246_4269349465778689922_n.jpg" alt="DopeTunes"/>
-        </div>
-        <p class="logo-slot-name">DopeTunes</p>
-      </div>
-
     </div>
   </section>
 
+  <!-- ══ BRANDING ══ -->
+  <section id="branding">
+    <div class="section-inner">
+      <p class="section-label">— identity systems</p>
+      <h2 class="section-heading">branding & logos</h2>
+      <p class="branding-intro">
+        Crafting visual identities from the ground up — marks that carry weight across every surface, screen, and universe.
+      </p>
+      <div class="logo-showcase">
 
-    <p>© 2025 <span class="glow">o87Dev</span> &nbsp;·&nbsp; deep space node</p>
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/truegle.png" alt="Truegle"/></div>
+          <p class="logo-slot-name">Truegle</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/logo.png" alt="Munch"/></div>
+          <p class="logo-slot-name">Munch</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/whistle-stop.png" alt="Whistle Stop"/></div>
+          <p class="logo-slot-name">Whistle Stop</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/frugle-v2.png" alt="Frugle"/></div>
+          <p class="logo-slot-name">Frugle</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/aura.png" alt="Aura"/></div>
+          <p class="logo-slot-name">Aura</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/Copilot_20260314_204725.png" alt="TrumpAFi"/></div>
+          <p class="logo-slot-name">TrumpAFi</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/Copilot_20260207_121828.png" alt="Whistle Stop Menu"/></div>
+          <p class="logo-slot-name">Whistle Stop — Menu</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/460232422_1490612778998969_1088007044468279513_n.jpg" alt="DuckE Duck"/></div>
+          <p class="logo-slot-name">DuckE Duck</p>
+        </div>
+
+        <div class="logo-slot">
+          <div class="logo-placeholder"><img src="/brands/481089662_1619933329400246_4269349465778689922_n.jpg" alt="DopeTunes"/></div>
+          <p class="logo-slot-name">DopeTunes</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ══ -->
+  <section class="cta-section" id="contact">
+    <div class="section-inner">
+      <div class="cta-box">
+        <h2 class="cta-heading">Ready to Build Something?</h2>
+        <p class="cta-sub">Whether it's a product from scratch, a security audit, or a custom dashboard — let's talk. No fluff, no agencies, just direct.</p>
+        <a href="mailto:o87enterprises@gmail.com" class="btn-primary">Start a Project</a>
+        <div class="cta-contact">
+          <span>Email: <a href="mailto:o87enterprises@gmail.com">o87enterprises@gmail.com</a></span>
+          <span>Phone: <a href="tel:5416230460">541-623-0460</a></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 <span class="glow">o87Dev</span> &nbsp;·&nbsp; beyond the possible</p>
   </footer>
 
 </div>
 
+<!-- ══ CHAT BUBBLE ══ -->
+<a href="mailto:o87enterprises@gmail.com" class="chat-bubble" title="Get in touch">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+</a>
+
+<!-- ══ THREE.JS ══ -->
 <script type="module">
 import * as THREE from 'three';
 
 (function() {
   const canvas = document.getElementById('three-canvas');
-  const scene = new THREE.Scene();
+  const scene  = new THREE.Scene();
   scene.background = null;
 
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -910,18 +1068,31 @@ import * as THREE from 'three';
   renderer.setClearColor(0x000000, 0);
 
   const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
   document.addEventListener('mousemove', (e) => {
     mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
   });
 
-  // planet
+  // Mobile touch parallax
+  document.addEventListener('touchmove', (e) => {
+    if (!e.touches.length) return;
+    const t = e.touches[0];
+    mouse.targetX = (t.clientX / window.innerWidth) * 2 - 1;
+    mouse.targetY = -(t.clientY / window.innerHeight) * 2 + 1;
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    mouse.targetX = 0; mouse.targetY = 0;
+  }, { passive: true });
+
+  // ── Background planet ──
   const planetGroup = new THREE.Group();
   scene.add(planetGroup);
 
   const planetMaterial = new THREE.ShaderMaterial({
     uniforms: {
-      uTime: { value: 0 },
+      uTime:   { value: 0 },
       uColor1: { value: new THREE.Color('#0a0818') },
       uColor2: { value: new THREE.Color('#c050ff') },
       uColor3: { value: new THREE.Color('#00f2ff') }
@@ -930,10 +1101,9 @@ import * as THREE from 'three';
       varying vec3 vNormal; varying vec3 vPosition;
       uniform float uTime;
       void main() {
-        vNormal = normalize(normalMatrix * normal);
-        vPosition = position;
+        vNormal = normalize(normalMatrix * normal); vPosition = position;
         vec3 pos = position;
-        float noise = sin(pos.x * 3.0 + uTime * 0.6) * cos(pos.y * 3.0 + uTime * 0.4) * 0.12;
+        float noise = sin(pos.x*3.0+uTime*0.6)*cos(pos.y*3.0+uTime*0.4)*0.12;
         pos += normal * noise;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
       }
@@ -942,42 +1112,42 @@ import * as THREE from 'three';
       uniform float uTime; uniform vec3 uColor1, uColor2, uColor3;
       varying vec3 vNormal, vPosition;
       void main() {
-        float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.2);
-        float pattern = sin(vPosition.x * 7.0 + uTime) * sin(vPosition.y * 7.0 + uTime * 0.8) * 0.5 + 0.5;
-        vec3 color = mix(uColor1, uColor2, pattern * 0.5);
-        color = mix(color, uColor3, fresnel * 0.6);
+        float fresnel = pow(1.0 - dot(vNormal, vec3(0.0,0.0,1.0)), 2.2);
+        float pattern = sin(vPosition.x*7.0+uTime)*sin(vPosition.y*7.0+uTime*0.8)*0.5+0.5;
+        vec3 color = mix(uColor1, uColor2, pattern*0.5);
+        color = mix(color, uColor3, fresnel*0.6);
         gl_FragColor = vec4(color, 1.0);
       }
     `
   });
+
   const planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(4.2, 64), planetMaterial);
   planetGroup.add(planetMesh);
 
   const atmosMat = new THREE.ShaderMaterial({
     uniforms: { uColor: { value: new THREE.Color('#c050ff') } },
-    vertexShader: `varying vec3 vNormal; void main() { vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `uniform vec3 uColor; varying vec3 vNormal; void main() { float i = pow(0.7 - dot(vNormal, vec3(0,0,1)), 2.5); gl_FragColor = vec4(uColor, i * 0.35); }`,
+    vertexShader: `varying vec3 vNormal; void main() { vNormal=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `uniform vec3 uColor; varying vec3 vNormal; void main() { float i=pow(0.7-dot(vNormal,vec3(0,0,1)),2.5); gl_FragColor=vec4(uColor,i*0.35); }`,
     transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending
   });
   planetGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(4.8, 32), atmosMat));
 
   const ringGroup = new THREE.Group();
-  ringGroup.rotation.x = Math.PI * 0.4;
-  ringGroup.rotation.z = 0.2;
+  ringGroup.rotation.x = Math.PI * 0.4; ringGroup.rotation.z = 0.2;
   planetGroup.add(ringGroup);
 
   const ringMat = new THREE.ShaderMaterial({
     uniforms: { uTime: { value: 0 } },
-    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    vertexShader: `varying vec2 vUv; void main() { vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
     fragmentShader: `
       uniform float uTime; varying vec2 vUv;
       void main() {
-        float dist = length(vUv - 0.5) * 2.0;
+        float dist = length(vUv-0.5)*2.0;
         vec3 c = mix(vec3(0.0,0.9,1.0), vec3(0.75,0.3,1.0), dist);
         c = mix(c, vec3(1.0,0.8,0.2), sin(dist*6.28+uTime)*0.3+0.3);
         float a = smoothstep(0.0,0.2,dist)*smoothstep(1.0,0.8,dist);
-        a *= 0.6 + sin(dist*45.0+uTime*3.0)*0.2;
-        gl_FragColor = vec4(c, a * 0.7);
+        a *= 0.6+sin(dist*45.0+uTime*3.0)*0.2;
+        gl_FragColor = vec4(c, a*0.7);
       }
     `,
     transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending
@@ -988,434 +1158,314 @@ import * as THREE from 'three';
     new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
   ));
 
-  planetGroup.position.set(0, 0, -22); // far background
+  planetGroup.position.set(0, 0, -22);
 
-  // ══════════════════════════════════════
-  // CELESTIAL OBJECT FIELD
-  // ══════════════════════════════════════
-
-  // ── Canvas texture generators ──
+  // ── Star field ──
   function makeStarTex() {
     const c = document.createElement('canvas'); c.width = c.height = 64;
-    const x = c.getContext('2d'), cx = 32, cy = 32;
-    // core
-    const g = x.createRadialGradient(cx,cy,0, cx,cy,28);
-    g.addColorStop(0,'rgba(255,255,255,1)');
-    g.addColorStop(0.15,'rgba(200,230,255,0.9)');
-    g.addColorStop(0.5,'rgba(100,160,255,0.3)');
-    g.addColorStop(1,'rgba(0,0,0,0)');
-    x.fillStyle = g; x.fillRect(0,0,64,64);
-    // diffraction spikes
-    x.strokeStyle = 'rgba(200,220,255,0.5)'; x.lineWidth = 1;
-    [[cx,0,cx,64],[0,cy,64,cy],[8,8,56,56],[56,8,8,56]].forEach(([x1,y1,x2,y2]) => {
+    const x = c.getContext('2d'), cx=32, cy=32;
+    const g = x.createRadialGradient(cx,cy,0,cx,cy,28);
+    g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.15,'rgba(200,230,255,0.9)');
+    g.addColorStop(0.5,'rgba(100,160,255,0.3)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=g; x.fillRect(0,0,64,64);
+    x.strokeStyle='rgba(200,220,255,0.5)'; x.lineWidth=1;
+    [[cx,0,cx,64],[0,cy,64,cy],[8,8,56,56],[56,8,8,56]].forEach(([x1,y1,x2,y2])=>{
       x.beginPath(); x.moveTo(x1,y1); x.lineTo(x2,y2); x.stroke();
     });
     return new THREE.CanvasTexture(c);
   }
 
-  function makeGalaxyTex(col1='#4488ff', col2='#aa44ff') {
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const x = c.getContext('2d'), cx = 64, cy = 64;
+  function makeGalaxyTex(col1,col2) {
+    const c = document.createElement('canvas'); c.width=c.height=128;
+    const x=c.getContext('2d'), cx=64, cy=64;
     x.save(); x.translate(cx,cy);
-    for (let arm = 0; arm < 3; arm++) {
+    for(let arm=0;arm<3;arm++){
       x.rotate((Math.PI*2)/3);
-      for (let i = 0; i < 60; i++) {
-        const t = i/60, r = 8+t*50, angle = t*Math.PI*3;
-        const px = Math.cos(angle)*r, py = Math.sin(angle)*r*0.35;
-        const g2 = x.createRadialGradient(px,py,0,px,py,3+t*4);
-        g2.addColorStop(0, t<0.5?col1:col2);
-        g2.addColorStop(1,'rgba(0,0,0,0)');
+      for(let i=0;i<60;i++){
+        const t=i/60,r=8+t*50,angle=t*Math.PI*3;
+        const px=Math.cos(angle)*r, py=Math.sin(angle)*r*0.35;
+        const g2=x.createRadialGradient(px,py,0,px,py,3+t*4);
+        g2.addColorStop(0,t<0.5?col1:col2); g2.addColorStop(1,'rgba(0,0,0,0)');
         x.fillStyle=g2; x.beginPath(); x.arc(px,py,3+t*4,0,Math.PI*2); x.fill();
       }
     }
-    // core glow
-    const gc = x.createRadialGradient(0,0,0,0,0,18);
-    gc.addColorStop(0,'rgba(255,240,200,0.95)');
-    gc.addColorStop(0.4,'rgba(255,200,100,0.4)');
-    gc.addColorStop(1,'rgba(0,0,0,0)');
+    const gc=x.createRadialGradient(0,0,0,0,0,18);
+    gc.addColorStop(0,'rgba(255,240,200,0.95)'); gc.addColorStop(0.4,'rgba(255,200,100,0.4)'); gc.addColorStop(1,'rgba(0,0,0,0)');
     x.fillStyle=gc; x.beginPath(); x.arc(0,0,18,0,Math.PI*2); x.fill();
     x.restore();
     return new THREE.CanvasTexture(c);
   }
 
-  function makePlanetTex(r,g,b) {
-    const c = document.createElement('canvas'); c.width = c.height = 64;
-    const x = c.getContext('2d');
-    const grd = x.createRadialGradient(22,20,2, 32,32,28);
+  function makePlanetTex(r,g,b){
+    const c=document.createElement('canvas'); c.width=c.height=64;
+    const x=c.getContext('2d');
+    const grd=x.createRadialGradient(22,20,2,32,32,28);
     grd.addColorStop(0,`rgba(${Math.min(255,r+80)},${Math.min(255,g+80)},${Math.min(255,b+80)},1)`);
     grd.addColorStop(0.5,`rgba(${r},${g},${b},1)`);
     grd.addColorStop(1,`rgba(${Math.max(0,r-60)},${Math.max(0,g-60)},${Math.max(0,b-60)},0.9)`);
     x.fillStyle=grd; x.beginPath(); x.arc(32,32,28,0,Math.PI*2); x.fill();
-    // atmosphere
-    const ga = x.createRadialGradient(32,32,24, 32,32,32);
-    ga.addColorStop(0,'rgba(0,0,0,0)');
-    ga.addColorStop(1,`rgba(${r},${g},${b},0.3)`);
+    const ga=x.createRadialGradient(32,32,24,32,32,32);
+    ga.addColorStop(0,'rgba(0,0,0,0)'); ga.addColorStop(1,`rgba(${r},${g},${b},0.3)`);
     x.fillStyle=ga; x.beginPath(); x.arc(32,32,32,0,Math.PI*2); x.fill();
     return new THREE.CanvasTexture(c);
   }
 
-  function makeBlackHoleTex() {
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const x = c.getContext('2d'), cx=64, cy=64;
-    // accretion disk glow
-    const gd = x.createRadialGradient(cx,cy,12, cx,cy,58);
-    gd.addColorStop(0,'rgba(255,140,0,0.9)');
-    gd.addColorStop(0.3,'rgba(200,60,255,0.5)');
-    gd.addColorStop(0.7,'rgba(0,100,255,0.2)');
-    gd.addColorStop(1,'rgba(0,0,0,0)');
+  function makeBlackHoleTex(){
+    const c=document.createElement('canvas'); c.width=c.height=128;
+    const x=c.getContext('2d'),cx=64,cy=64;
+    const gd=x.createRadialGradient(cx,cy,12,cx,cy,58);
+    gd.addColorStop(0,'rgba(255,140,0,0.9)'); gd.addColorStop(0.3,'rgba(200,60,255,0.5)');
+    gd.addColorStop(0.7,'rgba(0,100,255,0.2)'); gd.addColorStop(1,'rgba(0,0,0,0)');
     x.fillStyle=gd; x.beginPath(); x.arc(cx,cy,58,0,Math.PI*2); x.fill();
-    // void center
-    x.fillStyle='rgba(0,0,0,1)';
-    x.beginPath(); x.arc(cx,cy,14,0,Math.PI*2); x.fill();
+    x.fillStyle='rgba(0,0,0,1)'; x.beginPath(); x.arc(cx,cy,14,0,Math.PI*2); x.fill();
     return new THREE.CanvasTexture(c);
   }
 
-  function makeNebulaTex(r,g,b) {
-    const c = document.createElement('canvas'); c.width = c.height = 96;
-    const x = c.getContext('2d');
-    for (let i=0;i<4;i++) {
-      const px=20+Math.random()*56, py=20+Math.random()*56, pr=15+Math.random()*25;
-      const gn = x.createRadialGradient(px,py,0,px,py,pr);
-      gn.addColorStop(0,`rgba(${r},${g},${b},0.5)`);
-      gn.addColorStop(1,'rgba(0,0,0,0)');
+  function makeNebulaTex(r,g,b){
+    const c=document.createElement('canvas'); c.width=c.height=96;
+    const x=c.getContext('2d');
+    for(let i=0;i<4;i++){
+      const px=20+Math.random()*56,py=20+Math.random()*56,pr=15+Math.random()*25;
+      const gn=x.createRadialGradient(px,py,0,px,py,pr);
+      gn.addColorStop(0,`rgba(${r},${g},${b},0.5)`); gn.addColorStop(1,'rgba(0,0,0,0)');
       x.fillStyle=gn; x.beginPath(); x.arc(px,py,pr,0,Math.PI*2); x.fill();
     }
     return new THREE.CanvasTexture(c);
   }
 
-  // pre-bake textures
-  const texStar    = makeStarTex();
-  const texGal1    = makeGalaxyTex('#4488ff','#aa44ff');
-  const texGal2    = makeGalaxyTex('#ffaa22','#ff4422');
-  const texPlanet1 = makePlanetTex(80,160,255);   // blue
-  const texPlanet2 = makePlanetTex(255,120,40);   // orange
-  const texPlanet3 = makePlanetTex(120,255,160);  // green
-  const texPlanet4 = makePlanetTex(200,80,255);   // purple
-  const texBH      = makeBlackHoleTex();
-  const texNeb1    = makeNebulaTex(80,120,255);
-  const texNeb2    = makeNebulaTex(200,60,255);
+  const texStar=makeStarTex(), texGal1=makeGalaxyTex('#4488ff','#aa44ff'), texGal2=makeGalaxyTex('#ffaa22','#ff4422');
+  const texP1=makePlanetTex(80,160,255), texP2=makePlanetTex(255,120,40), texP3=makePlanetTex(120,255,160), texP4=makePlanetTex(200,80,255);
+  const texBH=makeBlackHoleTex(), texN1=makeNebulaTex(80,120,255), texN2=makeNebulaTex(200,60,255);
 
-  const celestials = [];
+  const celestials=[];
 
-  function addSprites(texture, count, sizeMin, sizeMax, rMin, rMax, color=null) {
-    const mat = new THREE.SpriteMaterial({
-      map: texture, transparent: true,
-      blending: THREE.AdditiveBlending, depthWrite: false,
-      color: color || 0xffffff
-    });
-    for (let i=0; i<count; i++) {
-      const s = new THREE.Sprite(mat.clone());
-      const sz = sizeMin + Math.random()*(sizeMax-sizeMin);
-      s.scale.set(sz, sz, 1);
-      const theta = Math.random()*Math.PI*2;
-      const phi   = Math.acos(2*Math.random()-1);
-      const r     = rMin + Math.random()*(rMax-rMin);
-      s.position.set(
-        r*Math.sin(phi)*Math.cos(theta),
-        r*Math.sin(phi)*Math.sin(theta)*0.7,
-        -30+Math.random()*80
-      );
-      s.userData = {
-        floatOffset: Math.random()*Math.PI*2,
-        floatSpeed:  0.1+Math.random()*0.3,
-        originalY:   s.position.y,
-        twinkle:     Math.random() > 0.6
-      };
-      scene.add(s);
-      celestials.push(s);
+  function addSprites(texture,count,sizeMin,sizeMax,rMin,rMax,color=null){
+    const mat=new THREE.SpriteMaterial({map:texture,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,color:color||0xffffff});
+    for(let i=0;i<count;i++){
+      const s=new THREE.Sprite(mat.clone());
+      const sz=sizeMin+Math.random()*(sizeMax-sizeMin);
+      s.scale.set(sz,sz,1);
+      const theta=Math.random()*Math.PI*2, phi=Math.acos(2*Math.random()-1), r=rMin+Math.random()*(rMax-rMin);
+      s.position.set(r*Math.sin(phi)*Math.cos(theta), r*Math.sin(phi)*Math.sin(theta)*0.7, -30+Math.random()*80);
+      s.userData={floatOffset:Math.random()*Math.PI*2, floatSpeed:0.1+Math.random()*0.3, originalY:s.position.y, twinkle:Math.random()>0.6};
+      scene.add(s); celestials.push(s);
     }
   }
 
-  addSprites(texStar,    320, 0.4, 2.2,  8, 65);   // stars
-  addSprites(texGal1,     18, 2.5, 6.0, 20, 70);   // blue/purple galaxies
-  addSprites(texGal2,     12, 2.0, 5.0, 25, 65);   // orange/red galaxies
-  addSprites(texPlanet1,  14, 1.2, 2.8, 12, 55);   // blue planets
-  addSprites(texPlanet2,  10, 1.0, 2.4, 14, 50);   // orange planets
-  addSprites(texPlanet3,   8, 0.9, 2.0, 16, 48);   // green planets
-  addSprites(texPlanet4,   8, 1.0, 2.2, 18, 52);   // purple planets
-  addSprites(texBH,        6, 1.8, 3.5, 28, 60);   // black holes
-  addSprites(texNeb1,     14, 4.0, 9.0, 20, 65);   // blue nebulae
-  addSprites(texNeb2,     10, 3.5, 8.0, 22, 60);   // purple nebulae
+  addSprites(texStar,320,0.4,2.2,8,65);
+  addSprites(texGal1,18,2.5,6.0,20,70); addSprites(texGal2,12,2.0,5.0,25,65);
+  addSprites(texP1,14,1.2,2.8,12,55); addSprites(texP2,10,1.0,2.4,14,50);
+  addSprites(texP3,8,0.9,2.0,16,48); addSprites(texP4,8,1.0,2.2,18,52);
+  addSprites(texBH,6,1.8,3.5,28,60);
+  addSprites(texN1,14,4.0,9.0,20,65); addSprites(texN2,10,3.5,8.0,22,60);
 
-  // dummy particles ref for resize handler
-  const pMat = { uniforms: { uPixelRatio: { value: 1 }, uTime: { value: 0 } } };
-  const particles = { rotation: { y: 0 } };
+  const pMat = { uniforms: { uPixelRatio:{value:1}, uTime:{value:0} } };
 
-  // orbs
-  const orbitGroup = new THREE.Group();
-  scene.add(orbitGroup);
-  const orbColors = [0x00f2ff, 0xc050ff, 0xffcc44];
-  const orbs = orbColors.map((col, i) => {
-    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.9 }));
-    orb.add(new THREE.Mesh(new THREE.SphereGeometry(0.55, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 })));
-    orb.userData = { angle: (i/3)*Math.PI*2, radius: 7.5 + i*1.8, speed: 0.25 + i*0.12, yOffset: -1.5 + i*1.2 };
-    orbitGroup.add(orb);
-    return orb;
+  // ── Orbs ──
+  const orbitGroup=new THREE.Group(); scene.add(orbitGroup);
+  const orbs=[0x00f2ff,0xc050ff,0xffcc44].map((col,i)=>{
+    const orb=new THREE.Mesh(new THREE.SphereGeometry(0.28,16),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.9}));
+    orb.add(new THREE.Mesh(new THREE.SphereGeometry(0.55,8),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.25})));
+    orb.userData={angle:(i/3)*Math.PI*2,radius:7.5+i*1.8,speed:0.25+i*0.12,yOffset:-1.5+i*1.2};
+    orbitGroup.add(orb); return orb;
   });
   orbitGroup.position.copy(planetGroup.position);
 
-  // lighting
-  scene.add(new THREE.AmbientLight(0x404060, 0.5));
-  const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
-  const light2 = new THREE.PointLight(0xc050ff, 2.5, 70);
-  scene.add(light1, light2);
+  scene.add(new THREE.AmbientLight(0x404060,0.5));
+  const light1=new THREE.PointLight(0x00f2ff,2.5,70), light2=new THREE.PointLight(0xc050ff,2.5,70);
+  scene.add(light1,light2);
 
-  // ══════════════════════════════════════
-  // 3D LOGO GROUP — lives in the scene
-  // ══════════════════════════════════════
-  renderer.localClippingEnabled = true;
+  // ── 3D Logo ──
+  renderer.localClippingEnabled=true;
+  const logoGroup=new THREE.Group(); scene.add(logoGroup);
+  logoGroup.position.set(0,0.8,12);
 
-  const logoGroup = new THREE.Group();
-  scene.add(logoGroup);
-  logoGroup.position.set(0, 0.8, 12); // in front of background planet
-
-  // ── Ring ──
-  // Re-map UVs so x = angle (0-1 around ring), y = radial (0=inner, 1=outer)
-  const RING_IN = 3.0, RING_OUT = 5.8;
-  const ringLogoGeom = new THREE.RingGeometry(RING_IN, RING_OUT, 128, 4);
-  const rPos = ringLogoGeom.attributes.position;
-  const rUV  = ringLogoGeom.attributes.uv;
-  for (let i = 0; i < rPos.count; i++) {
-    const x = rPos.getX(i), y = rPos.getY(i);
-    const angle = ((Math.atan2(y, x) / (Math.PI * 2)) + 1) % 1;
-    const dist  = Math.sqrt(x*x + y*y);
-    const t     = (dist - RING_IN) / (RING_OUT - RING_IN);
-    rUV.setXY(i, angle, t);
+  const RING_IN=3.0, RING_OUT=5.8;
+  const ringLogoGeom=new THREE.RingGeometry(RING_IN,RING_OUT,128,4);
+  const rPos=ringLogoGeom.attributes.position, rUV=ringLogoGeom.attributes.uv;
+  for(let i=0;i<rPos.count;i++){
+    const x=rPos.getX(i),y=rPos.getY(i);
+    const angle=((Math.atan2(y,x)/(Math.PI*2))+1)%1;
+    const dist=Math.sqrt(x*x+y*y), t=(dist-RING_IN)/(RING_OUT-RING_IN);
+    rUV.setXY(i,angle,t);
   }
-  rUV.needsUpdate = true;
+  rUV.needsUpdate=true;
 
-  const ringLogoMat = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 } },
-    vertexShader: `
-      varying vec2 vUv;
-      void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
-    `,
-    fragmentShader: `
+  const ringLogoMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`
       uniform float uTime; varying vec2 vUv;
-      void main() {
-        vec3 purple = vec3(0.75, 0.19, 1.0);
-        vec3 orange = vec3(1.0,  0.36, 0.12);
-        vec3 gold   = vec3(1.0,  0.74, 0.14);
-        float t = vUv.x;
-        vec3 col = mix(purple, orange, smoothstep(0.15, 0.65, t));
-        col = mix(col, gold, smoothstep(0.65, 0.95, t));
-        float r = vUv.y;
-        float a = smoothstep(0.0, 0.12, r) * smoothstep(1.0, 0.88, r);
-        a *= 0.75 + sin(r * 32.0 + uTime * 2.5) * 0.14;
-        gl_FragColor = vec4(col, a * 0.90);
+      void main(){
+        float angle=vUv.x, radial=vUv.y;
+        float wave=sin(angle*12.0-uTime*2.0)*0.5+0.5;
+        float pulse=0.55+0.3*sin(uTime*1.5+angle*6.28*2.0);
+        vec3 col=mix(vec3(1.0,0.30,0.12),vec3(0.85,0.19,0.42),angle);
+        col=mix(col,vec3(0.06,0.25,0.78),clamp(angle*1.8-0.8,0.0,1.0));
+        col=mix(col,vec3(1.0,0.82,0.25),wave*0.45);
+        float alpha=smoothstep(0.0,0.12,radial)*smoothstep(1.0,0.85,radial);
+        alpha*=pulse*(0.7+0.3*wave);
+        gl_FragColor=vec4(col,alpha*0.85);
       }
     `,
-    transparent: true, side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false, depthTest: true
+    transparent:true,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false
   });
 
-  const ringLogoMesh = new THREE.Mesh(ringLogoGeom, ringLogoMat);
-  ringLogoMesh.rotation.x = Math.PI * 0.83; // nearly flat equatorial ring
+  const ringLogoMesh=new THREE.Mesh(ringLogoGeom,ringLogoMat);
+  ringLogoMesh.rotation.x=Math.PI*0.38; ringLogoMesh.rotation.z=0.15;
   logoGroup.add(ringLogoMesh);
 
-  // ── Disc face canvas texture with o87 logo ──
-  const discCanvas = document.createElement('canvas');
-  discCanvas.width = discCanvas.height = 512;
-  const discCtx = discCanvas.getContext('2d');
-  const discTexture = new THREE.CanvasTexture(discCanvas);
+  logoGroup.add(Object.assign(
+    new THREE.Mesh(new THREE.RingGeometry(2.6,3.2,64,1),
+    new THREE.MeshBasicMaterial({color:0xc050ff,transparent:true,opacity:0.18,side:THREE.DoubleSide,blending:THREE.AdditiveBlending})),
+    {rotation:{x:Math.PI*0.38,y:0,z:0.15}}
+  ));
 
-  function drawDiscFace() {
-    discCtx.clearRect(0, 0, 512, 512);
-    // deep void background
-    discCtx.fillStyle = '#05030e';
-    discCtx.fillRect(0, 0, 512, 512);
-    // subtle radial atmosphere
-    const atmo = discCtx.createRadialGradient(256,256,60, 256,256,256);
-    atmo.addColorStop(0, 'rgba(16,8,40,0)');
-    atmo.addColorStop(1, 'rgba(192,80,255,0.12)');
-    discCtx.fillStyle = atmo;
-    discCtx.fillRect(0, 0, 512, 512);
+  const discCanvas=document.createElement('canvas'); discCanvas.width=discCanvas.height=512;
+  const discCtx=discCanvas.getContext('2d'), discTexture=new THREE.CanvasTexture(discCanvas);
 
-    const CX = 148, CY = 256; // sphere front face UV center is ~75% across = x≈384, but we offset left
-    const fontSize = 152;
-    discCtx.font = `900 ${fontSize}px Orbitron, sans-serif`;
-
-    // measure total width to center the whole "o87" as one unit
-    const wO  = discCtx.measureText('o').width;
-    const w87 = discCtx.measureText('87').width;
-    const gap = 6;
-    const totalW = wO + gap + w87;
-    const startX = CX - totalW / 2;
-
-    // "o" — moon style
+  function drawDiscFace(){
+    discCtx.clearRect(0,0,512,512);
+    discCtx.fillStyle='#05030e'; discCtx.fillRect(0,0,512,512);
+    const atmo=discCtx.createRadialGradient(256,256,60,256,256,256);
+    atmo.addColorStop(0,'rgba(16,8,40,0)'); atmo.addColorStop(1,'rgba(192,80,255,0.12)');
+    discCtx.fillStyle=atmo; discCtx.fillRect(0,0,512,512);
+    const CX=148,CY=256,fontSize=152;
+    discCtx.font=`900 ${fontSize}px Orbitron, sans-serif`;
+    const wO=discCtx.measureText('o').width, w87=discCtx.measureText('87').width, gap=6;
+    const totalW=wO+gap+w87, startX=CX-totalW/2;
     discCtx.save();
-    discCtx.shadowColor = 'rgba(180,220,255,0.95)';
-    discCtx.shadowBlur = 32;
-    const oGrad = discCtx.createRadialGradient(
-      startX + wO*0.6, CY + fontSize*0.25, 4,
-      startX + wO*0.5, CY + fontSize*0.3, wO*0.7
-    );
-    oGrad.addColorStop(0, '#ffffff');
-    oGrad.addColorStop(0.5, '#cce4f5');
-    oGrad.addColorStop(1, '#7aaac8');
-    discCtx.fillStyle = oGrad;
-    discCtx.textAlign    = 'left';
-    discCtx.textBaseline = 'middle';
-    discCtx.fillText('o', startX, CY);
-    discCtx.restore();
-
-    // "87" — orange → rose → blue
+    discCtx.shadowColor='rgba(180,220,255,0.95)'; discCtx.shadowBlur=32;
+    const oGrad=discCtx.createRadialGradient(startX+wO*0.6,CY+fontSize*0.25,4,startX+wO*0.5,CY+fontSize*0.3,wO*0.7);
+    oGrad.addColorStop(0,'#ffffff'); oGrad.addColorStop(0.5,'#cce4f5'); oGrad.addColorStop(1,'#7aaac8');
+    discCtx.fillStyle=oGrad; discCtx.textAlign='left'; discCtx.textBaseline='middle';
+    discCtx.fillText('o',startX,CY); discCtx.restore();
     discCtx.save();
-    discCtx.shadowColor = 'rgba(255,75,31,0.9)';
-    discCtx.shadowBlur = 38;
-    const g87 = discCtx.createLinearGradient(startX + wO + gap, CY - fontSize*0.5, startX + totalW, CY + fontSize*0.5);
-    g87.addColorStop(0,   '#FF4B1F');
-    g87.addColorStop(0.4, '#E0306A');
-    g87.addColorStop(1,   '#1040C8');
-    discCtx.fillStyle    = g87;
-    discCtx.textAlign    = 'left';
-    discCtx.textBaseline = 'middle';
-    discCtx.fillText('87', startX + wO + gap, CY);
-    discCtx.restore();
-
-    discTexture.needsUpdate = true;
+    discCtx.shadowColor='rgba(255,75,31,0.9)'; discCtx.shadowBlur=38;
+    const g87=discCtx.createLinearGradient(startX+wO+gap,CY-fontSize*0.5,startX+totalW,CY+fontSize*0.5);
+    g87.addColorStop(0,'#FF4B1F'); g87.addColorStop(0.4,'#E0306A'); g87.addColorStop(1,'#1040C8');
+    discCtx.fillStyle=g87; discCtx.textAlign='left'; discCtx.textBaseline='middle';
+    discCtx.fillText('87',startX+wO+gap,CY); discCtx.restore();
+    discTexture.needsUpdate=true;
   }
 
-  // Draw immediately with fallback font, then redraw with Orbitron when loaded
   drawDiscFace();
-  document.fonts.load('900 1px Orbitron').then(() => {
-    drawDiscFace();
-  });
+  document.fonts.load('900 1px Orbitron').then(()=>drawDiscFace());
 
-  const bodyGeom = new THREE.SphereGeometry(2.55, 64, 32);
-  const bodyMat  = new THREE.MeshBasicMaterial({ map: discTexture });
-  const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
-  bodyMesh.scale.set(1.08, 0.76, 1.0);
-  logoGroup.add(bodyMesh);
+  const bodyMesh=new THREE.Mesh(new THREE.SphereGeometry(2.55,64,32),new THREE.MeshBasicMaterial({map:discTexture}));
+  bodyMesh.scale.set(1.08,0.76,1.0); logoGroup.add(bodyMesh);
 
-  // loop
-  const clock = new THREE.Clock();
+  const clock=new THREE.Clock();
 
-  function animate() {
+  function animate(){
     requestAnimationFrame(animate);
-    const delta = clock.getDelta();
-    const time  = performance.now() / 1000;
+    const delta=clock.getDelta(), time=performance.now()/1000;
 
-    mouse.x += (mouse.targetX - mouse.x) * 0.05;
-    mouse.y += (mouse.targetY - mouse.y) * 0.05;
+    mouse.x+=(mouse.targetX-mouse.x)*0.05;
+    mouse.y+=(mouse.targetY-mouse.y)*0.05;
 
-    planetMaterial.uniforms.uTime.value = time;
-    ringMat.uniforms.uTime.value        = time;
-    pMat.uniforms.uTime.value           = time;
-    ringLogoMat.uniforms.uTime.value    = time;
+    planetMaterial.uniforms.uTime.value=time;
+    ringMat.uniforms.uTime.value=time;
+    pMat.uniforms.uTime.value=time;
+    ringLogoMat.uniforms.uTime.value=time;
 
-    planetMesh.rotation.y += 0.0018;
-    planetMesh.rotation.x  = Math.sin(time * 0.2) * 0.04;
-    ringGroup.rotation.z  += 0.0012;
+    planetMesh.rotation.y+=0.0018;
+    planetMesh.rotation.x=Math.sin(time*0.2)*0.04;
+    ringGroup.rotation.z+=0.0012;
 
-    // background planet: very subtle drift — feels like a distant star
-    planetGroup.rotation.y = mouse.x * 0.08;
-    planetGroup.rotation.x = mouse.y * 0.05;
+    planetGroup.rotation.y=mouse.x*0.08;
+    planetGroup.rotation.x=mouse.y*0.05;
 
-    // 3D logo follows mouse (hero — more responsive)
-    logoGroup.rotation.y = mouse.x * 0.55;
-    logoGroup.rotation.x = mouse.y * 0.35;
-    logoGroup.rotation.y += Math.sin(time * 0.12) * 0.0015;
+    logoGroup.rotation.y=mouse.x*0.55;
+    logoGroup.rotation.x=mouse.y*0.35;
+    logoGroup.rotation.y+=Math.sin(time*0.12)*0.0015;
 
-    // animate celestial objects — slow drift + twinkle
-    celestials.forEach((s, i) => {
-      const d = s.userData;
-      s.position.y = d.originalY + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.6;
-      if (d.twinkle) {
-        const flicker = 0.7 + 0.3 * Math.sin(time * (2 + i * 0.07) + d.floatOffset);
-        s.material.opacity = flicker;
-      }
+    celestials.forEach((s,i)=>{
+      const d=s.userData;
+      s.position.y=d.originalY+Math.sin(time*d.floatSpeed+d.floatOffset)*0.6;
+      if(d.twinkle) s.material.opacity=0.7+0.3*Math.sin(time*(2+i*0.07)+d.floatOffset);
     });
 
-    particles.rotation.y += 0; // no-op, kept for compat
-
-    orbs.forEach(o => {
-      o.userData.angle += o.userData.speed * delta * 2.5;
-      o.position.x = Math.cos(o.userData.angle) * o.userData.radius;
-      o.position.z = Math.sin(o.userData.angle) * o.userData.radius;
-      o.position.y = o.userData.yOffset + Math.sin(o.userData.angle * 1.5) * 1.8;
+    orbs.forEach(o=>{
+      o.userData.angle+=o.userData.speed*delta*2.5;
+      o.position.x=Math.cos(o.userData.angle)*o.userData.radius;
+      o.position.z=Math.sin(o.userData.angle)*o.userData.radius;
+      o.position.y=o.userData.yOffset+Math.sin(o.userData.angle*1.5)*1.8;
     });
 
-    light1.position.set(Math.sin(time * 0.4) * 14, 8,  Math.cos(time * 0.4) * 14);
-    light2.position.set(Math.sin(time * 0.4 + 2.5) * 14, -6, Math.cos(time * 0.4 + 2.5) * 14);
+    light1.position.set(Math.sin(time*0.4)*14,8,Math.cos(time*0.4)*14);
+    light2.position.set(Math.sin(time*0.4+2.5)*14,-6,Math.cos(time*0.4+2.5)*14);
 
-    camera.position.x = mouse.x * 2.5;
-    camera.position.y = mouse.y * 2.0;
+    camera.position.x=mouse.x*2.5;
+    camera.position.y=mouse.y*2.0;
     camera.lookAt(scene.position);
 
-    renderer.render(scene, camera);
+    renderer.render(scene,camera);
   }
 
   animate();
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    pMat.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    pMat.uniforms.uPixelRatio.value=renderer.getPixelRatio();
   });
-})();
-
-// modal — see plain <script> block below
-document.addEventListener('keydown', e => { if (e.key === 'Escape') window.closeModal(); });
-(function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const card = entry.target;
-      card.style.transitionDelay = (parseInt(card.dataset.delay || 0) * 70) + 'ms';
-      card.classList.add('visible');
-      observer.unobserve(card);
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-
-  document.querySelectorAll('.card').forEach(c => observer.observe(c));
-
-  // logo slot reveal
-  const slotObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (!entry.isIntersecting) return;
-      entry.target.style.transitionDelay = (i * 80) + 'ms';
-      entry.target.classList.add('visible');
-      slotObserver.unobserve(entry.target);
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.logo-slot').forEach(s => slotObserver.observe(s));
 })();
 </script>
 
-<!-- modal system in plain script so onclick handlers can always reach it -->
+<script type="module">
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') window.closeModal?.(); });
+
+const co=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(!entry.isIntersecting) return;
+    const c=entry.target;
+    c.style.transitionDelay=(parseInt(c.dataset.delay||0)*70)+'ms';
+    c.classList.add('visible'); co.unobserve(c);
+  });
+},{threshold:0.15,rootMargin:'0px 0px -50px 0px'});
+
+document.querySelectorAll('.card').forEach(c=>co.observe(c));
+
+const so=new IntersectionObserver(entries=>{
+  entries.forEach((entry,i)=>{
+    if(!entry.isIntersecting) return;
+    entry.target.style.transitionDelay=(i*80)+'ms';
+    entry.target.classList.add('visible'); so.unobserve(entry.target);
+  });
+},{threshold:0.15});
+
+document.querySelectorAll('.logo-slot').forEach(s=>so.observe(s));
+</script>
+
 <script>
-function openModal(title, url, type, icon, desc) {
-  icon = icon || ''; desc = desc || '';
-  const modal = document.getElementById('projectModal');
-  const body  = document.getElementById('modalBody');
-  document.getElementById('modalTitle').textContent = title;
-  body.innerHTML = '';
-  if (type === 'iframe' && url) {
-    const f = document.createElement('iframe');
-    f.src = url;
-    f.allow = 'microphone; autoplay';
-    body.appendChild(f);
+function openModal(title,url,type,icon,desc){
+  icon=icon||''; desc=desc||'';
+  const modal=document.getElementById('projectModal');
+  const body=document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent=title;
+  body.innerHTML='';
+  if(type==='iframe'&&url){
+    const f=document.createElement('iframe');
+    f.src=url; f.allow='microphone; autoplay'; body.appendChild(f);
   } else {
-    body.innerHTML = `
+    body.innerHTML=`
       <div class="modal-placeholder">
         <div class="modal-icon">${icon}</div>
-        <h3>${title}</h3>
-        <p>${desc}</p>
+        <h3>${title}</h3><p>${desc}</p>
         <span class="modal-badge">Preview Coming Soon</span>
       </div>`;
   }
   modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
 
-function closeModal() {
+function closeModal(){
   document.getElementById('projectModal').classList.remove('open');
-  document.getElementById('modalBody').innerHTML = '';
-  document.body.style.overflow = '';
+  document.getElementById('modalBody').innerHTML='';
+  document.body.style.overflow='';
 }
 </script>
 
