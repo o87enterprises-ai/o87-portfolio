@@ -287,7 +287,95 @@
       0%, 100% { transform: translateX(-50%) translateY(0); }
       50% { transform: translateX(-50%) translateY(10px); }
     }
-    
+
+    /* ════════════════════════ SERVICES SUMMARY ════════════════════════ */
+    .services-summary {
+      padding: 4rem 2rem 3rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .summary-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .summary-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-card {
+      background: rgba(11, 15, 26, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+
+    .summary-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+    }
+
+    .summary-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .summary-card h3 {
+      font-family: 'Syncopate', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-card p {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .view-all-wrapper {
+      text-align: center;
+      margin-top: 2.5rem;
+    }
+
+    .view-all-link {
+      font-family: 'Syncopate', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      text-decoration: none;
+      padding: 0.75rem 2rem;
+      border: 1px solid var(--border-glow);
+      border-radius: 999px;
+      display: inline-block;
+      transition: all 0.3s var(--ease);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .view-all-link:hover {
+      background: rgba(0, 212, 255, 0.1);
+      box-shadow: 0 0 24px rgba(0, 212, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
     /* ════════════════════════ IDENTITY STRIP ════════════════════════ */
     .identity-strip {
       padding: 3rem 2rem;
@@ -1171,6 +1259,30 @@
     <div class="scroll-hint">scroll</div>
   </section>
 
+  <!-- ══ SERVICES SUMMARY (3 Cards) ══ -->
+  <section class="services-summary">
+    <div class="summary-container">
+      <div class="summary-card">
+        <div class="summary-icon">⚡</div>
+        <h3>Development</h3>
+        <p>Full-stack web & mobile apps built for scale</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">🛡️</div>
+        <h3>Security</h3>
+        <p>Pentesting, OSINT & digital forensics</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">✦</div>
+        <h3>Design</h3>
+        <p>Visual identity, UI/UX & brand systems</p>
+      </div>
+    </div>
+    <div class="view-all-wrapper">
+      <a href="#services" class="view-all-link">View All Services &nbsp;→</a>
+    </div>
+  </section>
+
   <!-- ══ IDENTITY STRIP ══ -->
   <section class="identity-strip">
     <p>We build systems, not just interfaces.</p>
@@ -1257,8 +1369,8 @@
       <div class="card purple" data-delay="2">
         <div class="card-num">003 // SEARCH</div>
         <h3 class="card-title">Truegle</h3>
-        <div class="card-preview" onclick="openModal('Truegle','./apps/truegle/placeholder.html','iframe')">
-          <iframe src="./apps/truegle/placeholder.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <div class="card-preview" onclick="openModal('Truegle','apps/truegle/placeholder.html','iframe')">
+          <iframe src="apps/truegle/placeholder.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Next-gen search with privacy first. Indexing the open web without tracking. Beta coming soon.</p>
@@ -1981,14 +2093,34 @@ function openModal(title, url, type, icon, desc) {
   const body=document.getElementById('modalBody');
   document.getElementById('modalTitle').textContent=title;
   body.innerHTML='';
+  
   if(type==='iframe'&&url){
     const f=document.createElement('iframe');
-    f.src=url; f.allow='microphone; autoplay'; body.appendChild(f);
+    f.src=url; 
+    f.allow='microphone; autoplay';
+    f.style.width='100%';
+    f.style.height='100%';
+    f.style.border='none';
+    
+    // Handle iframe load errors
+    f.onerror = function() {
+      body.innerHTML=`<div class="modal-placeholder">
+        <div class="modal-icon">⚠️</div>
+        <h3>${title}</h3>
+        <p>Unable to load preview. The app may still be in development.</p>
+        <span class="modal-badge">Preview Unavailable</span>
+      </div>`;
+    };
+    
+    body.appendChild(f);
   } else {
     body.innerHTML=`<div class="modal-placeholder"><div class="modal-icon">${icon}</div><h3>${title}</h3><p>${desc}</p><span class="modal-badge">Preview Coming Soon</span></div>`;
   }
-  modal.classList.add('open'); document.body.style.overflow='hidden';
+  
+  modal.classList.add('open'); 
+  document.body.style.overflow='hidden';
 }
+
 function closeModal() {
   document.getElementById('projectModal').classList.remove('open');
   document.getElementById('modalBody').innerHTML='';
