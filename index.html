@@ -416,7 +416,23 @@
 <div class="nebula"></div>
 
 <header>
-  <a href="#" class="header-logo"><span class="hl-o">o</span><span class="hl-87">87</span></a>
+  <a href="#" class="header-logo" aria-label="o87">
+    <svg width="80" height="34" viewBox="0 0 80 34" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hLG" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00D4FF"/>
+          <stop offset="100%" stop-color="#6C5CE7"/>
+        </linearGradient>
+        <filter id="hGlow">
+          <feGaussianBlur stdDeviation="1.2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <text x="1" y="28" font-family="Orbitron,sans-serif" font-weight="900" font-size="28"
+            fill="none" stroke="url(#hLG)" stroke-width="1" filter="url(#hGlow)"
+            letter-spacing="-0.5">o87</text>
+    </svg>
+  </a>
   <nav>
     <a href="#services">Services</a>
     <a href="#projects">Work</a>
@@ -429,8 +445,22 @@
 
   <!-- ══ HERO ══ -->
   <section class="hero" id="hero">
-    <div class="hero-logo-mark" style="margin-bottom:2.2rem; opacity:0; animation:riseIn 0.7s 0.2s ease forwards;">
-      <span class="logo-o" style="font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(2.2rem,5vw,3.2rem); letter-spacing:-0.02em; line-height:1;">o</span><span class="logo-87" style="font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(2.2rem,5vw,3.2rem); letter-spacing:-0.02em; line-height:1;">87</span>
+    <div class="hero-logo-mark" style="margin-bottom:2rem; opacity:0; animation:riseIn 0.7s 0.2s ease forwards;">
+      <svg width="240" height="96" viewBox="0 0 240 96" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="heroLG" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00D4FF"/>
+            <stop offset="100%" stop-color="#6C5CE7"/>
+          </linearGradient>
+          <filter id="heroGlow">
+            <feGaussianBlur stdDeviation="3" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <text x="4" y="80" font-family="Orbitron,sans-serif" font-weight="900" font-size="80"
+              fill="none" stroke="url(#heroLG)" stroke-width="1.8" filter="url(#heroGlow)"
+              letter-spacing="-2">o87</text>
+      </svg>
     </div>
     <div class="logo-3d-area">
     </div>
@@ -754,84 +784,115 @@ import * as THREE from 'three';
     [1.0, 1.0, 1.0], [0.55, 0.8, 1.0], [1.0, 0.65, 0.35], [0.65, 0.45, 1.0],
   ]);
 
-  // ════════════════════════
-  // BACKGROUND PLANET
-  // ════════════════════════
+  // ══════════════════════════════════════════════
+  // NEAR-FIELD EARTH — ISS over Earth, right side
+  // ══════════════════════════════════════════════
   const planetGroup = new THREE.Group();
   scene.add(planetGroup);
 
   const planetMat = new THREE.ShaderMaterial({
-    uniforms: {
-      uTime:   { value: 0 },
-      uColor1: { value: new THREE.Color('#0a0818') },
-      uColor2: { value: new THREE.Color('#c050ff') },
-      uColor3: { value: new THREE.Color('#00f2ff') }
-    },
+    uniforms: { uTime: { value: 0 } },
     vertexShader: `
-      varying vec3 vNormal, vPosition; uniform float uTime;
+      varying vec3 vNormal; varying vec2 vUv; varying vec3 vPos;
       void main() {
-        vNormal = normalize(normalMatrix * normal); vPosition = position;
-        vec3 pos = position;
-        float n = sin(pos.x*3.0+uTime*0.6)*cos(pos.y*3.0+uTime*0.4)*0.12;
-        pos += normal*n;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
+        vNormal = normalize(normalMatrix * normal);
+        vUv = uv; vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }`,
     fragmentShader: `
-      uniform float uTime; uniform vec3 uColor1,uColor2,uColor3;
-      varying vec3 vNormal,vPosition;
+      uniform float uTime;
+      varying vec3 vNormal; varying vec2 vUv; varying vec3 vPos;
+
+      float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+      float noise(vec2 p){
+        vec2 i=floor(p); vec2 f=fract(p);
+        vec2 u=f*f*(3.0-2.0*f);
+        return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);
+      }
+      float fbm(vec2 p){
+        float v=0.0,a=0.5;
+        for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.0; a*=0.5; }
+        return v;
+      }
+
       void main() {
-        float f = pow(1.0-dot(vNormal,vec3(0,0,1)),2.2);
-        float p = sin(vPosition.x*7.0+uTime)*sin(vPosition.y*7.0+uTime*0.8)*0.5+0.5;
-        vec3 c = mix(uColor1,uColor2,p*0.5); c = mix(c,uColor3,f*0.6);
-        gl_FragColor = vec4(c,1.0);
+        vec2 uv = vUv;
+        uv.x += uTime * 0.006;
+
+        float terrain = fbm(uv * 3.5);
+        float detail  = fbm(uv * 11.0 + vec2(3.7, 1.3));
+        float surf = terrain * 0.65 + detail * 0.35;
+
+        // ocean/land colors
+        vec3 deepOcean  = vec3(0.02, 0.09, 0.32);
+        vec3 shallowSea = vec3(0.04, 0.20, 0.52);
+        vec3 coast      = vec3(0.14, 0.40, 0.20);
+        vec3 land       = vec3(0.11, 0.28, 0.12);
+        vec3 highland   = vec3(0.30, 0.25, 0.16);
+        vec3 snowcap    = vec3(0.82, 0.86, 0.90);
+
+        vec3 col;
+        if      (surf < 0.38) col = mix(deepOcean, shallowSea, surf / 0.38);
+        else if (surf < 0.43) col = mix(shallowSea, coast,    (surf-0.38)/0.05);
+        else if (surf < 0.60) col = mix(coast, land,          (surf-0.43)/0.17);
+        else if (surf < 0.75) col = mix(land, highland,       (surf-0.60)/0.15);
+        else                  col = mix(highland, snowcap,    (surf-0.75)/0.25);
+
+        // polar ice
+        float lat = abs(vUv.y - 0.5) * 2.0;
+        col = mix(col, snowcap, smoothstep(0.78, 0.96, lat));
+
+        // clouds
+        float c1 = fbm(uv * 4.5 + vec2(uTime*0.011, uTime*0.005));
+        float c2 = fbm(uv * 7.5 - vec2(uTime*0.007, uTime*0.009));
+        float clouds = smoothstep(0.40, 0.60, c1*0.6 + c2*0.4);
+        col = mix(col, vec3(0.88,0.91,0.94), clouds * 0.82);
+
+        // lighting — sun from upper left
+        vec3 lightDir = normalize(vec3(-0.65, 0.55, 0.85));
+        float diff = max(dot(vNormal, lightDir), 0.0);
+        col *= (0.06 + diff * 0.94);
+
+        // night side + city lights
+        float night = 1.0 - smoothstep(-0.05, 0.25, dot(vNormal, lightDir));
+        float city  = pow(fbm(uv * 22.0), 4.0) * night * 1.6;
+        col += vec3(0.88, 0.74, 0.38) * city;
+        col += vec3(0.01, 0.03, 0.10) * night * 0.35;
+
+        // ocean specular
+        vec3 halfDir = normalize(lightDir + vec3(0,0,1));
+        float spec = pow(max(dot(vNormal, halfDir), 0.0), 90.0);
+        float isOcean = 1.0 - smoothstep(0.38, 0.46, surf);
+        col += vec3(0.45, 0.65, 1.0) * spec * isOcean * 0.4;
+
+        // atmospheric rim
+        float rim = pow(1.0 - abs(dot(vNormal, vec3(0,0,1))), 3.2);
+        col = mix(col, vec3(0.10, 0.40, 1.0), rim * 0.65);
+
+        gl_FragColor = vec4(col, 1.0);
       }`
   });
-  const planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(4.2, 64), planetMat);
+  const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(18, 128, 64), planetMat);
   planetGroup.add(planetMesh);
 
+  // Atmosphere glow
   const atmosMat = new THREE.ShaderMaterial({
-    uniforms: { uColor: { value: new THREE.Color('#c050ff') } },
-    vertexShader:`varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader:`uniform vec3 uColor; varying vec3 vN; void main(){ float i=pow(0.7-dot(vN,vec3(0,0,1)),2.5); gl_FragColor=vec4(uColor,i*0.35); }`,
-    transparent:true, side:THREE.BackSide, blending:THREE.AdditiveBlending
+    vertexShader: `varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),2.5); gl_FragColor=vec4(0.12,0.40,1.0,f*0.5); }`,
+    transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false
   });
-  planetGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(4.8,32), atmosMat));
+  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(19.8, 64, 32), atmosMat));
 
-  const rGrp = new THREE.Group();
-  rGrp.rotation.x = Math.PI * 0.5; // equatorial — flat horizontal plane
-  rGrp.rotation.z = 0;
-  planetGroup.add(rGrp);
-
-  const rMat = new THREE.ShaderMaterial({
-    uniforms:{ uTime:{ value:0 } },
-    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader:`
-      uniform float uTime; varying vec2 vUv;
-      void main(){
-        float d=length(vUv-0.5)*2.0;
-        vec3 c=mix(vec3(0,0.9,1),vec3(0.75,0.3,1),d);
-        c=mix(c,vec3(1,0.8,0.2),sin(d*6.28+uTime)*0.3+0.3);
-        float a=smoothstep(0,0.2,d)*smoothstep(1,0.8,d);
-        a*=0.6+sin(d*45.0+uTime*3.0)*0.2;
-        gl_FragColor=vec4(c,a*0.7);
-      }`,
-    transparent:true, side:THREE.DoubleSide, blending:THREE.AdditiveBlending
+  // Thin cloud halo
+  const haloMat = new THREE.ShaderMaterial({
+    vertexShader: `varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),6.0); gl_FragColor=vec4(0.7,0.85,1.0,f*0.2); }`,
+    transparent: true, side: THREE.FrontSide, blending: THREE.AdditiveBlending, depthWrite: false
   });
-  rGrp.add(new THREE.Mesh(new THREE.RingGeometry(5.8,10.2,128,1), rMat));
-  rGrp.add(new THREE.Mesh(new THREE.RingGeometry(5.0,5.6,128,1),
-    new THREE.MeshBasicMaterial({ color:0x00f2ff, transparent:true, opacity:0.2, side:THREE.DoubleSide, blending:THREE.AdditiveBlending })));
-  planetGroup.position.set(0,0,-22);
+  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(20.5, 64, 32), haloMat));
 
-  // orb lights
-  const orbitGrp = new THREE.Group();
-  scene.add(orbitGrp);
-  const orbs = [0x00f2ff,0xc050ff,0xffcc44].map((col,i) => {
-    const o = new THREE.Mesh(new THREE.SphereGeometry(0.28,16), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0.9 }));
-    o.add(new THREE.Mesh(new THREE.SphereGeometry(0.55,8), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0.25 })));
-    o.userData = { a:(i/3)*Math.PI*2, r:7.5+i*1.8, s:0.25+i*0.12, y:-1.5+i*1.2 };
-    orbitGrp.add(o); return o;
-  });
-  orbitGrp.position.copy(planetGroup.position);
+  // Near-field right side — like looking out ISS window
+  planetGroup.position.set(28, -12, 2);
 
   scene.add(new THREE.AmbientLight(0x404060, 0.5));
   const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
@@ -928,14 +989,12 @@ import * as THREE from 'three';
     mouse.y += (mouse.ty - mouse.y) * 0.05;
 
     planetMat.uniforms.uTime.value = t;
-    rMat.uniforms.uTime.value      = t;
     rLMat.uniforms.uTime.value     = t;
+    planetMesh.rotation.y += 0.0008; // slow self-rotation
 
-    planetMesh.rotation.y += 0.0018;
-    planetMesh.rotation.x  = Math.sin(t*0.2)*0.04;
-    rGrp.rotation.z       += 0.0012;
-    planetGroup.rotation.y = mouse.x * 0.08;
-    planetGroup.rotation.x = mouse.y * 0.05;
+    // Planet drifts with mouse — ISS window parallax feel
+    planetGroup.position.x += (28 + mouse.x * 2.5 - planetGroup.position.x) * 0.025;
+    planetGroup.position.y += (-12 - mouse.y * 2.0 - planetGroup.position.y) * 0.025;
 
     logoGroup.rotation.y = mouse.x * 0.55 + Math.sin(t*0.12)*0.0015;
     logoGroup.rotation.x = mouse.y * 0.35;
@@ -944,13 +1003,6 @@ import * as THREE from 'three';
     starLayers.forEach(layer => {
       layer.position.x += (-mouse.x * layer.userData.pFactor - layer.position.x) * 0.04;
       layer.position.y += ( mouse.y * layer.userData.pFactor * 0.45 - layer.position.y) * 0.04;
-    });
-
-    orbs.forEach(o => {
-      o.userData.a += o.userData.s * delta * 2.5;
-      o.position.x = Math.cos(o.userData.a) * o.userData.r;
-      o.position.z = Math.sin(o.userData.a) * o.userData.r;
-      o.position.y = o.userData.y + Math.sin(o.userData.a * 1.5) * 1.8;
     });
 
     light1.position.set(Math.sin(t*0.4)*14, 8, Math.cos(t*0.4)*14);
