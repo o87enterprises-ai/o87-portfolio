@@ -48,18 +48,13 @@
       z-index:500;
     }
     .header-logo {
-      font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem;
-      letter-spacing:0.28em; text-decoration:none;
-      display:inline-flex; align-items:baseline;
+      display:inline-flex; align-items:center;
+      text-decoration:none;
     }
-    .header-logo .hl-o {
-      color:#ffffff;
-      filter:drop-shadow(0 0 8px rgba(200,230,255,0.7));
-    }
-    .header-logo .hl-87 {
-      background:linear-gradient(135deg,#FF4B1F 0%,#E0306A 45%,#1040C8 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      filter:drop-shadow(0 0 14px rgba(255,75,31,0.4));
+    .header-logo img {
+      height: 28px;
+      width: auto;
+      filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.3));
     }
     nav { display:flex; align-items:center; gap:2.2rem; }
     nav a {
@@ -405,21 +400,7 @@
 
 <header>
   <a href="#" class="header-logo" aria-label="o87">
-    <svg width="80" height="34" viewBox="0 0 80 34" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="hLG" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#00D4FF"/>
-          <stop offset="100%" stop-color="#6C5CE7"/>
-        </linearGradient>
-        <filter id="hGlow">
-          <feGaussianBlur stdDeviation="1.2" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <text x="1" y="28" font-family="Orbitron,sans-serif" font-weight="900" font-size="28"
-            fill="none" stroke="url(#hLG)" stroke-width="1" filter="url(#hGlow)"
-            letter-spacing="-0.5">o87</text>
-    </svg>
+    <img src="logo-hero.png" alt="o87" />
   </a>
   <nav>
     <a href="#value-prop">What We Do</a>
