@@ -94,6 +94,16 @@
       margin:0 auto 0.5rem;
       opacity:0; animation:riseIn 0.9s 0.4s ease forwards;
     }
+    /* New hero logo image */
+    .hero-logo-img {
+      width: min(360px, 70vw);
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      opacity: 0;
+      animation: riseIn 0.9s 0.3s ease forwards;
+      filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.4));
+    }
     .hero-headline {
       font-family:'Orbitron',sans-serif; font-size:clamp(1.3rem,3.5vw,2.2rem);
       font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
@@ -424,24 +434,8 @@
 
   <!-- ══ HERO ══ -->
   <section class="hero" id="hero">
-    <div class="hero-logo-mark" style="margin-bottom:0.5rem; opacity:0; animation:riseIn 0.7s 0.2s ease forwards;">
-      <svg width="180" height="72" viewBox="0 0 240 96" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="heroLG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00D4FF"/>
-            <stop offset="100%" stop-color="#6C5CE7"/>
-          </linearGradient>
-          <filter id="heroGlow">
-            <feGaussianBlur stdDeviation="3" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <text x="4" y="80" font-family="Orbitron,sans-serif" font-weight="900" font-size="80"
-              fill="none" stroke="url(#heroLG)" stroke-width="1.8" filter="url(#heroGlow)"
-              letter-spacing="-2">o87</text>
-      </svg>
-    </div>
     <div class="logo-3d-area">
+      <img src="logo-hero.png" alt="o87" class="hero-logo-img" />
     </div>
     <h1 class="hero-headline">Infinite Universe, Infinite Possibilities</h1>
     <p class="hero-sub">software &nbsp;·&nbsp; security &nbsp;·&nbsp; design &nbsp;·&nbsp; intelligence</p>
