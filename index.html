@@ -464,6 +464,9 @@
       </svg>
     </div>
     <div class="logo-3d-area">
+      <div class="logo-text-overlay">
+        <span class="logo-o">o</span><span class="logo-87">87</span>
+      </div>
     </div>
     <h1 class="hero-headline">Beyond The Possible</h1>
     <p class="hero-sub">software &nbsp;·&nbsp; security &nbsp;·&nbsp; design &nbsp;·&nbsp; intelligence</p>
@@ -901,27 +904,27 @@ import * as THREE from 'three';
         gl_FragColor = vec4(col, 1.0);
       }`
   });
-  const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(18, 128, 64), planetMat);
+  const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(12, 128, 64), planetMat);
   planetGroup.add(planetMesh);
 
-  // Atmosphere glow
+  // Gas giant atmosphere glow — orange/purple gradient
   const atmosMat = new THREE.ShaderMaterial({
     vertexShader: `varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),2.5); gl_FragColor=vec4(0.12,0.40,1.0,f*0.5); }`,
+    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),2.5); vec3 col=mix(vec3(0.52,0.18,0.58),vec3(0.92,0.52,0.18),f); gl_FragColor=vec4(col,f*0.5); }`,
     transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false
   });
-  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(19.8, 64, 32), atmosMat));
+  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(13.5, 64, 32), atmosMat));
 
-  // Thin cloud halo
+  // Outer cloud halo — subtle gaseous envelope
   const haloMat = new THREE.ShaderMaterial({
     vertexShader: `varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),6.0); gl_FragColor=vec4(0.7,0.85,1.0,f*0.2); }`,
+    fragmentShader: `varying vec3 vN; void main(){ float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),6.0); vec3 col=mix(vec3(0.62,0.28,0.62),vec3(0.95,0.68,0.35),f*0.5+0.5); gl_FragColor=vec4(col,f*0.18); }`,
     transparent: true, side: THREE.FrontSide, blending: THREE.AdditiveBlending, depthWrite: false
   });
-  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(20.5, 64, 32), haloMat));
+  planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(14.5, 64, 32), haloMat));
 
-  // Near-field right side — like looking out ISS window
-  planetGroup.position.set(28, -12, 2);
+  // Positioned off-screen to the right — ~25-30% visible
+  planetGroup.position.set(18, -6, -12);
 
   scene.add(new THREE.AmbientLight(0x404060, 0.5));
   const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
