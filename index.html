@@ -83,21 +83,89 @@
     }
     @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.4; transform:scale(0.7); } }
 
-    /* 3D logo area */
+    /* 3D logo area - fixed layer above the page */
     .logo-3d-area {
-      position:relative; width:min(520px,82vw); height:min(520px,82vw);
-      margin:0 auto 0.5rem;
-      opacity:0; animation:riseIn 0.9s 0.4s ease forwards;
+      position: relative;
+      width: min(420px, 75vw);
+      height: min(420px, 75vw);
+      margin: 0 auto 0.2rem;
+      opacity: 0;
+      animation: riseIn 0.9s 0.4s ease forwards;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      z-index: 100;
     }
-    /* New hero logo image */
+    /* New hero logo image - 3D animated with neon effects */
     .hero-logo-img {
-      width: min(360px, 70vw);
+      width: 100%;
       height: auto;
       display: block;
       margin: 0 auto;
       opacity: 0;
-      animation: riseIn 0.9s 0.3s ease forwards;
-      filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.4));
+      animation: 
+        riseIn 0.9s 0.3s ease forwards,
+        logoFloat 6s ease-in-out infinite,
+        logoGlow 4s ease-in-out infinite,
+        logoSurge 8s ease-in-out infinite;
+      filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5));
+      transform-style: preserve-3d;
+      backface-visibility: visible;
+    }
+    .hero-logo-img.glitch {
+      animation: 
+        riseIn 0.9s 0.3s ease forwards,
+        logoFloat 6s ease-in-out infinite,
+        logoGlow 4s ease-in-out infinite,
+        logoSurge 8s ease-in-out infinite,
+        logoGlitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    }
+
+    /* 3D floating animation */
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateY(-8px) rotateX(2deg) rotateY(-2deg) rotateZ(1deg); }
+      50% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      75% { transform: translateY(-8px) rotateX(-2deg) rotateY(2deg) rotateZ(-1deg); }
+    }
+
+    /* Neon glow intensity variance */
+    @keyframes logoGlow {
+      0%, 100% { filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 50px rgba(192, 80, 255, 0.3)); }
+      25% { filter: drop-shadow(0 0 35px rgba(0, 212, 255, 0.7)) drop-shadow(0 0 70px rgba(192, 80, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.3)) drop-shadow(0 0 30px rgba(192, 80, 255, 0.2)); }
+      75% { filter: drop-shadow(0 0 45px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 90px rgba(192, 80, 255, 0.6)); }
+    }
+
+    /* Surge effect */
+    @keyframes logoSurge {
+      0%, 100% { 
+        filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 50px rgba(192, 80, 255, 0.3));
+      }
+      10% { 
+        filter: drop-shadow(0 0 60px rgba(0, 212, 255, 0.9)) drop-shadow(0 0 120px rgba(192, 80, 255, 0.7)) drop-shadow(0 0 180px rgba(255, 204, 68, 0.4));
+      }
+      20% { 
+        filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 50px rgba(192, 80, 255, 0.3));
+      }
+      60% { 
+        filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 50px rgba(192, 80, 255, 0.3));
+      }
+      70% { 
+        filter: drop-shadow(0 0 55px rgba(0, 212, 255, 0.85)) drop-shadow(0 0 100px rgba(192, 80, 255, 0.65)) drop-shadow(0 0 150px rgba(255, 204, 68, 0.35));
+      }
+      80% { 
+        filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 50px rgba(192, 80, 255, 0.3));
+      }
+    }
+
+    /* Glitch effect */
+    @keyframes logoGlitch {
+      0% { transform: translate(0) rotateX(0deg) rotateY(0deg); }
+      20% { transform: translate(-2px, 2px) rotateX(5deg) rotateY(-5deg); filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8)) hue-rotate(20deg); }
+      40% { transform: translate(2px, -2px) rotateX(-5deg) rotateY(5deg); filter: drop-shadow(0 0 30px rgba(192, 80, 255, 0.8)) hue-rotate(-20deg); }
+      60% { transform: translate(-2px, -2px) rotateX(5deg) rotateY(5deg); filter: drop-shadow(0 0 30px rgba(255, 204, 68, 0.8)) hue-rotate(10deg); }
+      80% { transform: translate(2px, 2px) rotateX(-5deg) rotateY(-5deg); filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8)) hue-rotate(-10deg); }
+      100% { transform: translate(0) rotateX(0deg) rotateY(0deg); }
     }
     .hero-headline {
       font-family:'Orbitron',sans-serif; font-size:clamp(1.3rem,3.5vw,2.2rem);
@@ -1095,6 +1163,20 @@ async function sendChat() {
 document.getElementById('chatInput').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
 });
+
+// Logo glitch effect - random trigger
+const logoImg = document.querySelector('.hero-logo-img');
+function triggerGlitch() {
+  if (!logoImg) return;
+  logoImg.classList.add('glitch');
+  setTimeout(() => {
+    logoImg.classList.remove('glitch');
+    // Schedule next glitch randomly between 8-20 seconds
+    setTimeout(triggerGlitch, 8000 + Math.random() * 12000);
+  }, 300 + Math.random() * 400);
+}
+// Start the glitch cycle after initial load
+setTimeout(triggerGlitch, 3000);
 </script>
 
 </body>

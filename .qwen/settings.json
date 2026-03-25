@@ -3,7 +3,9 @@
     "allow": [
       "Bash(grep *)",
       "Read(//Users/ducke.duck_1/Downloads/**)",
-      "Bash(cp *)"
+      "Bash(cp *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   },
   "$version": 3
