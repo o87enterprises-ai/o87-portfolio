@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Read(//Users/ducke.duck_1/Downloads/**)",
+      "Bash(cp *)"
     ]
   },
   "$version": 3
