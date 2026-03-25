@@ -94,28 +94,6 @@
       margin:0 auto 0.5rem;
       opacity:0; animation:riseIn 0.9s 0.4s ease forwards;
     }
-    .logo-text-overlay {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-58%);
-      font-family:'Orbitron',sans-serif; font-weight:900;
-      font-size:clamp(3.2rem,9vw,6.5rem); letter-spacing:-0.03em;
-      pointer-events:none; z-index:15; line-height:1;
-      animation:logoFloat 6s ease-in-out infinite;
-    }
-    .logo-o {
-      background:radial-gradient(ellipse at 65% 65%,#ffffff 0%,#c8dff0 45%,#7aaac8 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      filter:drop-shadow(0 0 12px rgba(180,220,255,0.8));
-    }
-    .logo-87 {
-      background:linear-gradient(135deg,#FF4B1F 0%,#E0306A 40%,#1040C8 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      filter:drop-shadow(0 0 22px rgba(255,75,31,0.6)) drop-shadow(0 0 44px rgba(16,64,200,0.4));
-    }
-    @keyframes logoFloat {
-      0%,100%{ transform:translate(-50%,-58%) translateY(0) scale(1); }
-      50%{ transform:translate(-50%,-58%) translateY(-8px) scale(1.005); }
-    }
     .hero-headline {
       font-family:'Orbitron',sans-serif; font-size:clamp(1.3rem,3.5vw,2.2rem);
       font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
@@ -464,9 +442,6 @@
       </svg>
     </div>
     <div class="logo-3d-area">
-      <div class="logo-text-overlay">
-        <span class="logo-o">o</span><span class="logo-87">87</span>
-      </div>
     </div>
     <h1 class="hero-headline">Beyond The Possible</h1>
     <p class="hero-sub">software &nbsp;·&nbsp; security &nbsp;·&nbsp; design &nbsp;·&nbsp; intelligence</p>
@@ -819,6 +794,8 @@ import * as THREE from 'three';
   // ══════════════════════════════════════════════
   // NEAR-FIELD EARTH — ISS over Earth, right side
   // ══════════════════════════════════════════════
+  // GAS GIANT — purple/orange alien world
+  // ══════════════════════════════════════════════
   const planetGroup = new THREE.Group();
   scene.add(planetGroup);
 
@@ -835,76 +812,105 @@ import * as THREE from 'three';
       uniform float uTime;
       varying vec3 vNormal; varying vec2 vUv; varying vec3 vPos;
 
-      float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
-      float noise(vec2 p){
-        vec2 i=floor(p); vec2 f=fract(p);
-        vec2 u=f*f*(3.0-2.0*f);
-        return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);
+      float hash(vec2 p) {
+        p = fract(p * vec2(123.34, 456.21));
+        p += dot(p, p + 45.32);
+        return fract(p.x * p.y);
       }
-      float fbm(vec2 p){
-        float v=0.0,a=0.5;
-        for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.0; a*=0.5; }
-        return v;
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+          mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+          u.y
+        );
+      }
+
+      float fbm(vec2 p, int octaves) {
+        float value = 0.0;
+        float amplitude = 0.5;
+        float frequency = 1.0;
+        for (int i = 0; i < 7; i++) {
+          value += amplitude * noise(p * frequency);
+          frequency *= 2.0;
+          amplitude *= 0.5;
+        }
+        return value;
+      }
+
+      float warpedFbm(vec2 p) {
+        vec2 q = vec2(
+          fbm(p * 1.5 + vec2(0.0), 5),
+          fbm(p * 1.5 + vec2(5.2, 3.1), 5)
+        );
+        vec2 r = vec2(
+          fbm(p * 2.0 + q * vec2(1.7, 9.2), 6),
+          fbm(p * 2.0 + q * vec2(8.3, 2.8), 6)
+        );
+        return fbm(p * 4.0 + r * 2.5, 6);
       }
 
       void main() {
         vec2 uv = vUv;
-        uv.x += uTime * 0.006;
+        float latitude = (uv.y - 0.5) * 2.0;
+        float bandSpeed = 0.015 * (1.0 - abs(latitude) * 0.4);
+        uv.x += uTime * bandSpeed;
 
-        float terrain = fbm(uv * 3.5);
-        float detail  = fbm(uv * 11.0 + vec2(3.7, 1.3));
-        float surf = terrain * 0.65 + detail * 0.35;
+        float clouds = warpedFbm(uv * 2.5);
+        float detail = fbm(uv * 8.0 + vec2(uTime * 0.02, 0.0), 5);
+        clouds = clouds * 0.7 + detail * 0.3;
 
-        // ocean/land colors
-        vec3 deepOcean  = vec3(0.02, 0.09, 0.32);
-        vec3 shallowSea = vec3(0.04, 0.20, 0.52);
-        vec3 coast      = vec3(0.14, 0.40, 0.20);
-        vec3 land       = vec3(0.11, 0.28, 0.12);
-        vec3 highland   = vec3(0.30, 0.25, 0.16);
-        vec3 snowcap    = vec3(0.82, 0.86, 0.90);
+        float bandPattern = sin(latitude * 8.0 + clouds * 3.0) * 0.5 + 0.5;
+        bandPattern += sin(latitude * 12.0 - clouds * 2.0) * 0.3 + 0.3;
+        bandPattern = bandPattern * 0.5 + 0.5;
 
-        vec3 col;
-        if      (surf < 0.38) col = mix(deepOcean, shallowSea, surf / 0.38);
-        else if (surf < 0.43) col = mix(shallowSea, coast,    (surf-0.38)/0.05);
-        else if (surf < 0.60) col = mix(coast, land,          (surf-0.43)/0.17);
-        else if (surf < 0.75) col = mix(land, highland,       (surf-0.60)/0.15);
-        else                  col = mix(highland, snowcap,    (surf-0.75)/0.25);
+        vec3 deepPurple = vec3(0.28, 0.08, 0.38);
+        vec3 vibrantPurple = vec3(0.52, 0.18, 0.58);
+        vec3 burntOrange = vec3(0.78, 0.35, 0.15);
+        vec3 warmOrange = vec3(0.92, 0.52, 0.18);
+        vec3 softOrange = vec3(0.95, 0.68, 0.35);
+        vec3 plum = vec3(0.42, 0.12, 0.42);
+        vec3 darkVoid = vec3(0.08, 0.03, 0.12);
 
-        // polar ice
-        float lat = abs(vUv.y - 0.5) * 2.0;
-        col = mix(col, snowcap, smoothstep(0.78, 0.96, lat));
+        vec3 col = mix(darkVoid, deepPurple, clouds * 0.5);
+        vec3 bandColor = mix(burntOrange, vibrantPurple, bandPattern * 0.6);
+        col = mix(col, bandColor, clouds * 0.55);
 
-        // clouds
-        float c1 = fbm(uv * 4.5 + vec2(uTime*0.011, uTime*0.005));
-        float c2 = fbm(uv * 7.5 - vec2(uTime*0.007, uTime*0.009));
-        float clouds = smoothstep(0.40, 0.60, c1*0.6 + c2*0.4);
-        col = mix(col, vec3(0.88,0.91,0.94), clouds * 0.82);
+        float highClouds = smoothstep(0.55, 0.85, clouds);
+        vec3 highCloudColor = mix(softOrange, warmOrange, detail);
+        col = mix(col, highCloudColor, highClouds * 0.5);
 
-        // lighting — sun from upper left
+        float stormNoise = fbm(uv * 6.0 + vec2(uTime * 0.008, uTime * 0.004), 4);
+        float storms = smoothstep(0.72, 0.92, stormNoise) * smoothstep(0.4, 0.7, clouds);
+        vec3 stormColor = mix(plum, amber, stormNoise);
+        col = mix(col, stormColor, storms * 0.55);
+
+        float eqZone = 1.0 - smoothstep(0.0, 0.35, abs(latitude));
+        vec3 eqColor = mix(warmOrange, softOrange, detail * 0.5);
+        col = mix(col, eqColor, eqZone * 0.3);
+
+        float polar = smoothstep(0.65, 0.95, abs(latitude));
+        col = mix(col, deepPurple, polar * 0.45);
+
+        float turbulence = fbm(uv * 12.0 - vec2(uTime * 0.015, uTime * 0.007), 5);
+        vec3 turbColor = mix(burntOrange, vibrantPurple, turbulence);
+        col = mix(col, turbColor, turbulence * 0.18);
+
         vec3 lightDir = normalize(vec3(-0.65, 0.55, 0.85));
         float diff = max(dot(vNormal, lightDir), 0.0);
-        col *= (0.06 + diff * 0.94);
+        col *= (0.15 + diff * 0.85);
 
-        // night side + city lights
-        float night = 1.0 - smoothstep(-0.05, 0.25, dot(vNormal, lightDir));
-        float city  = pow(fbm(uv * 22.0), 4.0) * night * 1.6;
-        col += vec3(0.88, 0.74, 0.38) * city;
-        col += vec3(0.01, 0.03, 0.10) * night * 0.35;
-
-        // ocean specular
-        vec3 halfDir = normalize(lightDir + vec3(0,0,1));
-        float spec = pow(max(dot(vNormal, halfDir), 0.0), 90.0);
-        float isOcean = 1.0 - smoothstep(0.38, 0.46, surf);
-        col += vec3(0.45, 0.65, 1.0) * spec * isOcean * 0.4;
-
-        // atmospheric rim
-        float rim = pow(1.0 - abs(dot(vNormal, vec3(0,0,1))), 3.2);
-        col = mix(col, vec3(0.10, 0.40, 1.0), rim * 0.65);
+        float rim = pow(1.0 - abs(dot(vNormal, vec3(0, 0, 1))), 2.8);
+        vec3 rimColor = mix(vibrantPurple, warmOrange, latitude * 0.5 + 0.5);
+        col = mix(col, rimColor * 0.4, rim * 0.45);
 
         gl_FragColor = vec4(col, 1.0);
       }`
   });
-  const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(12, 128, 64), planetMat);
+  const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(28, 128, 64), planetMat);
   planetGroup.add(planetMesh);
 
   // Gas giant atmosphere glow — orange/purple gradient
@@ -923,89 +929,13 @@ import * as THREE from 'three';
   });
   planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(14.5, 64, 32), haloMat));
 
-  // Positioned off-screen to the right — ~25-30% visible
-  planetGroup.position.set(18, -6, -12);
+  // Positioned closer — takes up ~1/3 of screen on right
+  planetGroup.position.set(12, -4, -8);
 
   scene.add(new THREE.AmbientLight(0x404060, 0.5));
   const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
   const light2 = new THREE.PointLight(0xc050ff, 2.5, 70);
   scene.add(light1, light2);
-
-  // ════════════════════════
-  // 3D LOGO
-  // ════════════════════════
-  const logoGroup = new THREE.Group();
-  scene.add(logoGroup);
-  logoGroup.position.set(0, 0.8, 12);
-
-  // Ring
-  const RI = 3.0, RO = 5.8;
-  const rLGeom = new THREE.RingGeometry(RI, RO, 128, 4);
-  const rLPos = rLGeom.attributes.position, rLUV = rLGeom.attributes.uv;
-  for (let i = 0; i < rLPos.count; i++) {
-    const x = rLPos.getX(i), y = rLPos.getY(i);
-    const ang = ((Math.atan2(y,x)/(Math.PI*2))+1)%1;
-    const d   = Math.sqrt(x*x+y*y);
-    const t   = (d-RI)/(RO-RI);
-    rLUV.setXY(i, ang, t);
-  }
-  rLUV.needsUpdate = true;
-  const rLMat = new THREE.ShaderMaterial({
-    uniforms:{ uTime:{ value:0 } },
-    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader:`
-      uniform float uTime; varying vec2 vUv;
-      void main(){
-        float angle=vUv.x; float rad=vUv.y;
-        vec3 cA=vec3(0,0.95,1), cB=vec3(0.75,0.3,1), cC=vec3(1,0.8,0.15);
-        float t=mod(angle*3.0+uTime*0.18,1.0);
-        vec3 col=t<0.33?mix(cA,cB,t*3.0):t<0.66?mix(cB,cC,(t-0.33)*3.0):mix(cC,cA,(t-0.66)*3.0);
-        float ef=smoothstep(0,0.12,rad)*smoothstep(1,0.88,rad);
-        float sh=0.75+0.25*sin(angle*80.0-uTime*4.0);
-        float gl=0.85+0.15*sin(angle*12.0+uTime*0.6);
-        gl_FragColor=vec4(col*gl,ef*sh*0.88);
-      }`,
-    transparent:true, side:THREE.DoubleSide, blending:THREE.AdditiveBlending
-  });
-  logoGroup.add(new THREE.Mesh(rLGeom, rLMat));
-  logoGroup.add(new THREE.Mesh(new THREE.RingGeometry(2.85,3.05,128),
-    new THREE.MeshBasicMaterial({ color:0x00f2ff, transparent:true, opacity:0.5, side:THREE.DoubleSide, blending:THREE.AdditiveBlending })));
-
-  // disc with o87 text
-  const dc = document.createElement('canvas'); dc.width = dc.height = 512;
-  const dx = dc.getContext('2d');
-  const dTex = new THREE.CanvasTexture(dc);
-
-  function drawDisc() {
-    dx.clearRect(0,0,512,512);
-    dx.fillStyle='#05030e'; dx.fillRect(0,0,512,512);
-    const a=dx.createRadialGradient(256,256,60,256,256,256);
-    a.addColorStop(0,'rgba(16,8,40,0)'); a.addColorStop(1,'rgba(192,80,255,0.12)');
-    dx.fillStyle=a; dx.fillRect(0,0,512,512);
-    const CX=148, CY=256, FS=152;
-    dx.font=`900 ${FS}px Orbitron, sans-serif`;
-    const wO=dx.measureText('o').width, w87=dx.measureText('87').width, gap=6;
-    const tw=wO+gap+w87, sx=CX-tw/2;
-    dx.save();
-    dx.shadowColor='rgba(180,220,255,0.95)'; dx.shadowBlur=32;
-    const og=dx.createRadialGradient(sx+wO*0.6,CY+FS*0.25,4,sx+wO*0.5,CY+FS*0.3,wO*0.7);
-    og.addColorStop(0,'#ffffff'); og.addColorStop(0.5,'#cce4f5'); og.addColorStop(1,'#7aaac8');
-    dx.fillStyle=og; dx.textAlign='left'; dx.textBaseline='middle';
-    dx.fillText('o',sx,CY); dx.restore();
-    dx.save();
-    dx.shadowColor='rgba(255,75,31,0.9)'; dx.shadowBlur=38;
-    const g8=dx.createLinearGradient(sx+wO+gap,CY-FS*0.5,sx+tw,CY+FS*0.5);
-    g8.addColorStop(0,'#FF4B1F'); g8.addColorStop(0.4,'#E0306A'); g8.addColorStop(1,'#1040C8');
-    dx.fillStyle=g8; dx.textAlign='left'; dx.textBaseline='middle';
-    dx.fillText('87',sx+wO+gap,CY); dx.restore();
-    dTex.needsUpdate=true;
-  }
-  drawDisc();
-  document.fonts.load('900 1px Orbitron').then(() => drawDisc());
-
-  const bMesh = new THREE.Mesh(new THREE.SphereGeometry(2.55,64,32), new THREE.MeshBasicMaterial({ map:dTex }));
-  bMesh.scale.set(1.08,0.76,1.0);
-  logoGroup.add(bMesh);
 
   // ════════════════════════
   // ANIMATE
@@ -1021,15 +951,11 @@ import * as THREE from 'three';
     mouse.y += (mouse.ty - mouse.y) * 0.05;
 
     planetMat.uniforms.uTime.value = t;
-    rLMat.uniforms.uTime.value     = t;
-    planetMesh.rotation.y += 0.0008; // slow self-rotation
+    planetMesh.rotation.y += 0.0008;
 
-    // Planet drifts with mouse — ISS window parallax feel
-    planetGroup.position.x += (28 + mouse.x * 2.5 - planetGroup.position.x) * 0.025;
-    planetGroup.position.y += (-12 - mouse.y * 2.0 - planetGroup.position.y) * 0.025;
-
-    logoGroup.rotation.y = mouse.x * 0.55 + Math.sin(t*0.12)*0.0015;
-    logoGroup.rotation.x = mouse.y * 0.35;
+    // Planet drifts with mouse
+    planetGroup.position.x += (12 + mouse.x * 2.0 - planetGroup.position.x) * 0.025;
+    planetGroup.position.y += (-4 - mouse.y * 1.5 - planetGroup.position.y) * 0.025;
 
     // parallax star layers
     starLayers.forEach(layer => {
