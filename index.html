@@ -371,82 +371,6 @@
     footer { border-top:1px solid var(--border); padding:3rem 2rem; text-align:center; font-size:0.82rem; letter-spacing:0.12em; color:var(--muted); position:relative; z-index:10; background:rgba(4,3,13,0.4); backdrop-filter:blur(8px); }
     footer .glow { color:var(--cyan); text-shadow:0 0 15px rgba(0,242,255,0.7); font-weight:500; }
 
-    /* ════════════════════════ CHAT WIDGET ════════════════════════ */
-    .chat-bubble {
-      position:fixed; bottom:28px; right:28px; z-index:600;
-      width:52px; height:52px; border-radius:50%;
-      background:linear-gradient(135deg,#FF4B1F,#E0306A,#1040C8);
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; box-shadow:0 8px 28px rgba(255,75,31,0.4);
-      transition:transform 0.2s, box-shadow 0.2s;
-      border:none;
-    }
-    .chat-bubble:hover { transform:scale(1.08); box-shadow:0 12px 36px rgba(255,75,31,0.55); }
-    .chat-bubble svg { width:22px; height:22px; fill:#fff; pointer-events:none; }
-
-    .chat-window {
-      position:fixed; bottom:92px; right:28px; z-index:600;
-      width:360px; max-width:calc(100vw - 56px);
-      height:500px; max-height:calc(100vh - 120px);
-      background:rgba(6,5,18,0.97); backdrop-filter:blur(24px);
-      border:1px solid rgba(0,242,255,0.2); border-radius:20px;
-      display:flex; flex-direction:column; overflow:hidden;
-      box-shadow:0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,242,255,0.06) inset;
-      transform:translateY(16px) scale(0.97); opacity:0;
-      pointer-events:none;
-      transition:transform 0.25s cubic-bezier(0.2,0.9,0.3,1), opacity 0.25s ease;
-    }
-    .chat-window.open { transform:translateY(0) scale(1); opacity:1; pointer-events:all; }
-
-    .chat-header {
-      padding:1rem 1.2rem 0.9rem;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-      display:flex; align-items:center; justify-content:space-between;
-      flex-shrink:0;
-    }
-    .chat-header-info { display:flex; align-items:center; gap:0.65rem; }
-    .chat-header-avatar {
-      width:32px; height:32px; border-radius:50%;
-      background:linear-gradient(135deg,#FF4B1F,#1040C8);
-      display:flex; align-items:center; justify-content:center;
-      font-family:'Orbitron',sans-serif; font-size:0.6rem; font-weight:900; color:#fff;
-    }
-    .chat-header-name { font-family:'Orbitron',sans-serif; font-size:0.72rem; font-weight:700; color:var(--white); letter-spacing:0.05em; }
-    .chat-header-status { font-size:0.72rem; color:var(--cyan); display:flex; align-items:center; gap:0.35rem; margin-top:0.1rem; }
-    .chat-header-status::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
-    .chat-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.1rem; line-height:1; padding:0.2rem; transition:color 0.2s; }
-    .chat-close:hover { color:var(--white); }
-
-    .chat-messages { flex:1; overflow-y:auto; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.8rem; scroll-behavior:smooth; }
-    .chat-messages::-webkit-scrollbar { width:4px; }
-    .chat-messages::-webkit-scrollbar-track { background:transparent; }
-    .chat-messages::-webkit-scrollbar-thumb { background:rgba(0,242,255,0.2); border-radius:4px; }
-
-    .chat-msg { max-width:82%; padding:0.65rem 0.9rem; border-radius:14px; font-size:0.88rem; line-height:1.55; animation:riseIn 0.25s ease; }
-    .chat-msg.bot { background:rgba(0,242,255,0.07); border:1px solid rgba(0,242,255,0.12); color:var(--white); align-self:flex-start; border-bottom-left-radius:4px; }
-    .chat-msg.user { background:linear-gradient(135deg,rgba(255,75,31,0.25),rgba(16,64,200,0.25)); border:1px solid rgba(255,75,31,0.2); color:var(--white); align-self:flex-end; border-bottom-right-radius:4px; }
-    .chat-msg.typing { opacity:0.6; font-style:italic; color:var(--muted); }
-
-    .chat-input-row {
-      display:flex; gap:0.6rem; padding:0.85rem 1rem;
-      border-top:1px solid rgba(255,255,255,0.06); flex-shrink:0;
-    }
-    .chat-input {
-      flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      border-radius:10px; padding:0.6rem 0.85rem; color:var(--white);
-      font-family:'Inter',sans-serif; font-size:0.88rem; outline:none;
-      transition:border-color 0.2s;
-    }
-    .chat-input:focus { border-color:rgba(0,242,255,0.35); }
-    .chat-input::placeholder { color:var(--muted); }
-    .chat-send {
-      width:36px; height:36px; border-radius:10px; flex-shrink:0;
-      background:linear-gradient(135deg,#FF4B1F,#1040C8);
-      border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
-      transition:transform 0.15s, filter 0.15s;
-    }
-    .chat-send:hover { transform:scale(1.08); filter:brightness(1.15); }
-    .chat-send svg { width:15px; height:15px; fill:#fff; }
   
     @keyframes riseIn { from{ opacity:0; transform:translateY(20px); } to{ opacity:1; transform:translateY(0); } }
     @keyframes bob { 0%,100%{ transform:translateX(-50%) translateY(0); } 50%{ transform:translateX(-50%) translateY(12px); } }
@@ -567,8 +491,8 @@
       <div class="card purple" data-delay="3">
         <div class="card-num">004 // VOICE</div>
         <h3 class="card-title">TrumpAFi</h3>
-        <div class="card-preview" onclick="openModal('TrumpAFi','https://trumpafi.online/app','iframe')">
-          <iframe src="https://trumpafi.online/app" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <div class="card-preview" style="cursor:default;pointer-events:none;"><div class="preview-placeholder" style="background:rgba(0,0,0,0.7);"><div class="preview-icon">🔧</div><p style="color:#ffcc44;">Down for Maintenance</p></div>
+          
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Talk shit to the stupidest man in existence. Trust me, it's fun.</p>
@@ -973,7 +897,7 @@ import * as THREE from 'three';
   planetGroup.add(new THREE.Mesh(new THREE.SphereGeometry(14.5, 64, 32), haloMat));
 
   // Positioned closer — takes up ~1/3 of screen on right
-  planetGroup.position.set(12, -4, -8);
+  planetGroup.position.set(22, -6, -8);
 
   scene.add(new THREE.AmbientLight(0x404060, 0.5));
   const light1 = new THREE.PointLight(0x00f2ff, 2.5, 70);
@@ -1074,14 +998,7 @@ function closeModal() {
 </script>
 
 <!-- CHAT WIDGET -->
-<button class="chat-bubble" onclick="toggleChat()" aria-label="Open chat">
-  <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-</button>
 
-<div class="chat-window" id="chatWindow">
-  <div class="chat-header">
-    <div class="chat-header-info">
-      <div class="chat-header-avatar">o87</div>
       <div>
         <div class="chat-header-name">o87 Assistant</div>
         <div class="chat-header-status">online</div>
@@ -1104,80 +1021,3 @@ function closeModal() {
 const CHAT_SYSTEM = `You are the o87Dev assistant — a sharp, helpful AI for the o87Dev portfolio website. o87Dev is an independent software studio run by Odin (DuckE). Current projects include: TrumpAFi (satirical voice chatbot, live at trumpafi.online), Munch (dating assistant app), Truegle (privacy-first search engine), Whistle Stop (barber shop platform), Frugle (price comparison), OSINT Tool, Astrology API, Truegle Maps, and Que (queue management). Services: software development, security/pentesting, automation, SEO/marketing, design/branding, infrastructure. Contact: o87enterprises@gmail.com, 541-623-0460. Be concise, friendly, and direct. No corporate fluff. Keep responses under 3 sentences unless the user asks for more detail.`;
 
 // Replace this URL with your Cloudflare Worker URL once deployed
-const WORKER_URL = 'https://o87-chat.o87enterprises.workers.dev';
-
-let chatOpen = false;
-let chatHistory = [];
-
-function toggleChat() {
-  chatOpen = !chatOpen;
-  document.getElementById('chatWindow').classList.toggle('open', chatOpen);
-  if (chatOpen) setTimeout(() => document.getElementById('chatInput').focus(), 300);
-}
-
-function addMsg(text, role) {
-  const msgs = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + (role === 'user' ? 'user' : 'bot');
-  div.textContent = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-
-  addMsg(text, 'user');
-  chatHistory.push({ role: 'user', content: text });
-
-  const typing = addMsg('thinking…', 'bot typing');
-
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'llama3.2',
-        messages: [
-          { role: 'system', content: CHAT_SYSTEM },
-          ...chatHistory.slice(-8)
-        ]
-      })
-    });
-
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'Sorry, something went wrong. Try again!';
-    typing.textContent = reply;
-    typing.className = 'chat-msg bot';
-    chatHistory.push({ role: 'assistant', content: reply });
-  } catch(e) {
-    typing.textContent = 'Connection error — make sure the Worker is deployed!';
-    typing.className = 'chat-msg bot';
-  }
-}
-
-document.getElementById('chatInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-});
-
-// Logo glitch effect - random trigger
-const logoImg = document.querySelector('.hero-logo-img');
-function triggerGlitch() {
-  if (!logoImg) return;
-  logoImg.classList.add('glitch');
-  setTimeout(() => {
-    logoImg.classList.remove('glitch');
-    // Schedule next glitch randomly between 8-20 seconds
-    setTimeout(triggerGlitch, 8000 + Math.random() * 12000);
-  }, 300 + Math.random() * 400);
-}
-// Start the glitch cycle after initial load
-setTimeout(triggerGlitch, 3000);
-</script>
-
-</body>
-</html>
