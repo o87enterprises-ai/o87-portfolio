@@ -927,6 +927,7 @@ import * as THREE from 'three';
 
         float stormNoise = fbm(uv * 6.0 + vec2(uTime * 0.008, uTime * 0.004), 4);
         float storms = smoothstep(0.72, 0.92, stormNoise) * smoothstep(0.4, 0.7, clouds);
+        vec3 amber = vec3(0.88, 0.55, 0.22);
         vec3 stormColor = mix(plum, amber, stormNoise);
         col = mix(col, stormColor, storms * 0.55);
 
