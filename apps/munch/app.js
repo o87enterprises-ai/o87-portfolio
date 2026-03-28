@@ -1,5 +1,5 @@
 // Munch AI Dating Assistant - Frontend App
-const API_URL = '';
+const API_URL = 'https://dating-ai-assistant-production.up.railway.app';
 
 // State
 let currentUser = null;
