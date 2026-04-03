@@ -308,7 +308,15 @@
     <script>
         let currentResults = null;
         let currentReportId = null;
-        
+
+        // Security: HTML escaping utility to prevent XSS
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         async function analyzePhone() {
             const phone = document.getElementById('phone-input').value;
             const firstName = document.getElementById('first-name-input').value;
@@ -429,22 +437,22 @@
             
             let html = `
                 <div style="margin-bottom: 20px;">
-                    <h3>Phone: ${results.target}</h3>
-                    <p>Format: ${results.formats.international || results.target}</p>
+                    <h3>Phone: ${escapeHtml(results.target)}</h3>
+                    <p>Format: ${escapeHtml(results.formats.international || results.target)}</p>
                 </div>
-                
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <h4>📡 Carrier Information</h4>
-                        <p><strong>Carrier:</strong> ${results.carrier_info.carrier || 'Unknown'}</p>
-                        <p><strong>Line Type:</strong> ${results.carrier_info.line_type || 'Unknown'}</p>
-                        <p><strong>Country:</strong> ${results.carrier_info.country || 'Unknown'}</p>
+                        <p><strong>Carrier:</strong> ${escapeHtml(results.carrier_info.carrier || 'Unknown')}</p>
+                        <p><strong>Line Type:</strong> ${escapeHtml(results.carrier_info.line_type || 'Unknown')}</p>
+                        <p><strong>Country:</strong> ${escapeHtml(results.carrier_info.country || 'Unknown')}</p>
                     </div>
-                    
+
                     <div>
                         <h4>📍 Location Information</h4>
-                        <p><strong>Location:</strong> ${results.location_info.geocoded_location || 'Unknown'}</p>
-                        <p><strong>Timezone:</strong> ${results.location_info.timezones?.[0] || 'Unknown'}</p>
+                        <p><strong>Location:</strong> ${escapeHtml(results.location_info.geocoded_location || 'Unknown')}</p>
+                        <p><strong>Timezone:</strong> ${escapeHtml(results.location_info.timezones?.[0] || 'Unknown')}</p>
                     </div>
                 </div>
             `;
@@ -475,16 +483,16 @@
             if (results.evidence?.findings_summary?.length > 0) {
                 html += '<h4 style="margin-top: 20px;">📌 Evidence Found</h4>';
                 results.evidence.findings_summary.forEach(item => {
-                    html += `<div class="evidence-item">🔍 ${item}</div>`;
+                    html += `<div class="evidence-item">🔍 ${escapeHtml(item)}</div>`;
                 });
             }
-            
+
             // Correlation factors
             if (results.correlation_factors?.length > 0) {
                 html += '<h4 style="margin-top: 20px;">🎯 Correlation Factors</h4>';
                 html += '<ul>';
                 results.correlation_factors.forEach(factor => {
-                    html += `<li>${factor}</li>`;
+                    html += `<li>${escapeHtml(factor)}</li>`;
                 });
                 html += '</ul>';
             }
@@ -529,29 +537,29 @@
             
             let html = `
                 <div>
-                    <h3>Risk Level: ${results.risk_summary?.risk_level || 'Unknown'}</h3>
-                    <p>${results.risk_summary?.recommendation || ''}</p>
+                    <h3>Risk Level: ${escapeHtml(results.risk_summary?.risk_level || 'Unknown')}</h3>
+                    <p>${escapeHtml(results.risk_summary?.recommendation || '')}</p>
                 </div>
             `;
-            
+
             if (results.risk_summary?.indicators?.length > 0) {
                 html += '<h4>⚠️ Risk Indicators</h4><ul>';
                 results.risk_summary.indicators.forEach(indicator => {
-                    html += `<li>${indicator}</li>`;
+                    html += `<li>${escapeHtml(indicator)}</li>`;
                 });
                 html += '</ul>';
             }
-            
+
             if (results.extracted_identifiers) {
                 html += '<h4>📋 Extracted Information</h4>';
                 if (results.extracted_identifiers.ips?.length > 0) {
-                    html += `<p><strong>IPs:</strong> ${results.extracted_identifiers.ips.join(', ')}</p>`;
+                    html += `<p><strong>IPs:</strong> ${escapeHtml(results.extracted_identifiers.ips.join(', '))}</p>`;
                 }
                 if (results.extracted_identifiers.emails?.length > 0) {
-                    html += `<p><strong>Emails:</strong> ${results.extracted_identifiers.emails.join(', ')}</p>`;
+                    html += `<p><strong>Emails:</strong> ${escapeHtml(results.extracted_identifiers.emails.join(', '))}</p>`;
                 }
                 if (results.extracted_identifiers.usernames?.length > 0) {
-                    html += `<p><strong>Usernames:</strong> ${results.extracted_identifiers.usernames.join(', ')}</p>`;
+                    html += `<p><strong>Usernames:</strong> ${escapeHtml(results.extracted_identifiers.usernames.join(', '))}</p>`;
                 }
             }
             
@@ -580,14 +588,14 @@
             }
             
             let html = '<h3>Profiles Found</h3>';
-            
+
             if (results.agent_results?.social?.profiles_found?.length > 0) {
                 results.agent_results.social.profiles_found.forEach(profile => {
                     html += `
                         <div class="evidence-item">
-                            <strong>${profile.platform}</strong><br>
-                            <a href="${profile.url}" target="_blank">${profile.url}</a><br>
-                            Confidence: ${profile.confidence}
+                            <strong>${escapeHtml(profile.platform)}</strong><br>
+                            <a href="${escapeHtml(profile.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(profile.url)}</a><br>
+                            Confidence: ${escapeHtml(profile.confidence)}
                         </div>
                     `;
                 });
@@ -615,8 +623,16 @@
         
         function printResults() {
             if (!currentResults) return;
-            
+
             const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Please allow popups to print evidence reports');
+                return;
+            }
+
+            // Security: Use textContent instead of document.write with template literals
+            const reportData = JSON.stringify(currentResults, null, 2);
+            
             printWindow.document.write(`
                 <html>
                     <head>
@@ -625,15 +641,21 @@
                             body { font-family: Arial; padding: 20px; }
                             h1 { color: #4361ee; }
                             .evidence { border-left: 4px solid #f72585; padding: 10px; margin: 10px 0; }
+                            pre { white-space: pre-wrap; word-wrap: break-word; }
                         </style>
                     </head>
                     <body>
                         <h1>Harassment Evidence Report</h1>
-                        <p>Generated: ${new Date().toLocaleString()}</p>
-                        <pre>${JSON.stringify(currentResults, null, 2)}</pre>
+                        <p>Generated: ${escapeHtml(new Date().toLocaleString())}</p>
+                        <pre></pre>
                     </body>
                 </html>
             `);
+            // Security: Safely insert JSON data using textContent
+            const preElement = printWindow.document.querySelector('pre');
+            if (preElement) {
+                preElement.textContent = reportData;
+            }
             printWindow.document.close();
             printWindow.print();
         }

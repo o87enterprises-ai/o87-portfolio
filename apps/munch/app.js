@@ -1,6 +1,13 @@
 // Munch AI Dating Assistant - Frontend App
 const API_URL = 'https://dating-ai-assistant-production.up.railway.app';
 
+// Security: HTML escaping utility to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // State
 let currentUser = null;
 let currentConversation = null;
@@ -146,12 +153,14 @@ function renderConversationList() {
         return;
     }
     let html = conversations.map(conv => {
-        const statusClass = conv.status.toLowerCase();
+        const statusClass = escapeHtml(conv.status.toLowerCase());
         const statusIcon = getStatusIcon(conv.status);
         const isActive = currentConversation && currentConversation.id === conv.id;
-        return `<div class="conversation-item ${isActive ? 'active' : ''}" onclick="selectConversation(${conv.id})">
-            <span class="conv-name">${conv.name}</span>
-            <div class="conv-status ${statusClass}">${conv.chemistry_score}% ${statusIcon}<span class="conv-arrow">›</span></div>
+        const convName = escapeHtml(conv.name);
+        const convId = conv.id;
+        return `<div class="conversation-item ${isActive ? 'active' : ''}" onclick="selectConversation(${convId})">
+            <span class="conv-name">${convName}</span>
+            <div class="conv-status ${statusClass}">${escapeHtml(String(conv.chemistry_score))}% ${statusIcon}<span class="conv-arrow">›</span></div>
         </div>`;
     }).join('');
     html += `<button class="btn-new-conv" onclick="showNewConversationModal()" style="margin-top:12px;width:100%;padding:12px;background:transparent;border:1px dashed var(--border);border-radius:12px;color:var(--text-secondary);cursor:pointer;">+ New Conversation</button>`;
