@@ -386,6 +386,30 @@
       transition: opacity 0.4s ease;
     }
     .desktop-mode-modal.open { opacity: 1; pointer-events: all; }
+    .desktop-mode-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(6, 5, 18, 0.6);
+      color: var(--white);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+    .desktop-mode-close:hover {
+      background: rgba(0, 242, 255, 0.1);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      transform: rotate(90deg);
+    }
     .desktop-mode-content {
       max-width: 480px; width: 90%;
       background: rgba(6, 5, 18, 0.8);
@@ -489,13 +513,16 @@
 </div>
 
 <!-- DESKTOP MODE MODAL -->
-<div class="desktop-mode-modal" id="desktopModeModal">
-  <div class="desktop-mode-content">
+<div class="desktop-mode-modal" id="desktopModeModal" onclick="closeDesktopModeModalOnBackdrop(event)">
+  <div class="desktop-mode-content" onclick="event.stopPropagation()">
+    <!-- Close X button -->
+    <button class="desktop-mode-close" onclick="closeDesktopModeModal()" aria-label="Close">✕</button>
+    
     <div class="desktop-mode-icon">🖥️</div>
     <span class="desktop-mode-label">Best Experience</span>
     <h2 class="desktop-mode-heading">Enter Desktop Mode</h2>
     <p class="desktop-mode-desc">
-      This site is designed for desktop viewing. For the best experience with our 3D planet 
+      This site is designed for desktop viewing. For the best experience with our 3D planet
       and interactive features, we recommend viewing in desktop mode or on a larger screen.
     </p>
     <div class="desktop-mode-actions">
@@ -1094,16 +1121,60 @@ document.addEventListener('keydown', e => {
 
 // Desktop mode modal functions
 function enterDesktopMode() {
-  // Request fullscreen for desktop-like experience
+  // Try to request fullscreen for desktop-like experience
   const elem = document.documentElement;
+  const fullscreenPromise = Promise.resolve();
+  
   if (elem.requestFullscreen) {
-    elem.requestFullscreen().catch(err => console.log('Fullscreen denied:', err));
+    elem.requestFullscreen().catch(err => {
+      console.log('Fullscreen denied:', err);
+      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
+    });
   } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
+    elem.webkitRequestFullscreen().catch(err => {
+      console.log('Fullscreen denied:', err);
+      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
+    });
   } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen();
+    elem.msRequestFullscreen().catch(err => {
+      console.log('Fullscreen denied:', err);
+      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
+    });
+  } else {
+    // Fullscreen API not available
+    showDesktopModeMessage('For the best experience, please view this site on a desktop or laptop computer in landscape mode.');
   }
+  
   closeDesktopModeModal();
+}
+
+function showDesktopModeMessage(message) {
+  // Create a temporary toast notification
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(6, 5, 18, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    color: var(--white);
+    font-size: 0.85rem;
+    max-width: 90%;
+    z-index: 3000;
+    animation: slideUp 0.3s ease;
+  `;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideDown 0.3s ease reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 function stayMobile() {
@@ -1112,8 +1183,17 @@ function stayMobile() {
 
 function closeDesktopModeModal() {
   const modal = document.getElementById('desktopModeModal');
-  modal.classList.remove('open');
-  localStorage.setItem('desktopModeDismissed', 'true');
+  if (modal) {
+    modal.classList.remove('open');
+    localStorage.setItem('desktopModeDismissed', 'true');
+  }
+}
+
+function closeDesktopModeModalOnBackdrop(event) {
+  // Only close if clicking directly on the modal backdrop (not on the content)
+  if (event.target === event.currentTarget) {
+    closeDesktopModeModal();
+  }
 }
 
 function showDesktopModeModal() {
@@ -1123,13 +1203,29 @@ function showDesktopModeModal() {
     const dismissed = localStorage.getItem('desktopModeDismissed');
     if (!dismissed) {
       const modal = document.getElementById('desktopModeModal');
-      modal.classList.add('open');
+      if (modal) {
+        modal.classList.add('open');
+      }
     }
   }
 }
 
 // Show desktop mode modal after a short delay on mobile
 setTimeout(showDesktopModeModal, 1500);
+
+// Add CSS animations for toast
+const toastStyle = document.createElement('style');
+toastStyle.textContent = `
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes slideDown {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  }
+`;
+document.head.appendChild(toastStyle);
 
 (function() {
   const co = new IntersectionObserver((es) => {
