@@ -1119,11 +1119,10 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// Desktop mode modal functions
-function enterDesktopMode() {
+// Desktop mode modal functions - attach to window for inline onclick access
+window.enterDesktopMode = function() {
   // Try to request fullscreen for desktop-like experience
   const elem = document.documentElement;
-  const fullscreenPromise = Promise.resolve();
   
   if (elem.requestFullscreen) {
     elem.requestFullscreen().catch(err => {
@@ -1144,11 +1143,11 @@ function enterDesktopMode() {
     // Fullscreen API not available
     showDesktopModeMessage('For the best experience, please view this site on a desktop or laptop computer in landscape mode.');
   }
-  
-  closeDesktopModeModal();
-}
 
-function showDesktopModeMessage(message) {
+  closeDesktopModeModal();
+};
+
+window.showDesktopModeMessage = function(message) {
   // Create a temporary toast notification
   const toast = document.createElement('div');
   toast.textContent = message;
@@ -1170,33 +1169,33 @@ function showDesktopModeMessage(message) {
     animation: slideUp 0.3s ease;
   `;
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.animation = 'slideDown 0.3s ease reverse';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
-}
+};
 
-function stayMobile() {
+window.stayMobile = function() {
   closeDesktopModeModal();
-}
+};
 
-function closeDesktopModeModal() {
+window.closeDesktopModeModal = function() {
   const modal = document.getElementById('desktopModeModal');
   if (modal) {
     modal.classList.remove('open');
     localStorage.setItem('desktopModeDismissed', 'true');
   }
-}
+};
 
-function closeDesktopModeModalOnBackdrop(event) {
+window.closeDesktopModeModalOnBackdrop = function(event) {
   // Only close if clicking directly on the modal backdrop (not on the content)
   if (event.target === event.currentTarget) {
     closeDesktopModeModal();
   }
-}
+};
 
-function showDesktopModeModal() {
+window.showDesktopModeModal = function() {
   // Only show on mobile devices (screen width < 768px)
   if (window.innerWidth < 768) {
     // Check if user has dismissed before
@@ -1208,7 +1207,7 @@ function showDesktopModeModal() {
       }
     }
   }
-}
+};
 
 // Show desktop mode modal after a short delay on mobile
 setTimeout(showDesktopModeModal, 1500);
