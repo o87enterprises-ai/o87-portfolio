@@ -310,6 +310,7 @@
     .card-preview { position:relative; width:100%; height:115px; margin:0.75rem 0 1.1rem; border-radius:10px; overflow:hidden; cursor:pointer; border:1px solid rgba(var(--a),0.15); transition:height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s; background:rgba(0,0,0,0.4); }
     .card-preview:hover { height:172px; border-color:rgba(var(--a),0.5); }
     .card-preview iframe { width:200%; height:200%; transform:scale(0.5); transform-origin:top left; border:none; pointer-events:none; }
+    .card-preview img { width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block; }
     .card-preview .preview-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(135deg,rgba(var(--a),0.06),rgba(0,0,0,0.5)); }
     .card-preview .preview-placeholder .preview-icon { font-size:1.7rem; opacity:0.6; }
     .card-preview .preview-placeholder p { font-family:'Orbitron',sans-serif; font-size:0.52rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(var(--a),0.7); }
@@ -600,32 +601,24 @@
     <div class="projects-grid">
 
       <!-- 001 TRUEGLE -->
+      <!-- truegle.info sends X-Frame-Options: SAMEORIGIN, so it can't be iframed; preview is a screenshot that opens the live site -->
       <div class="card purple" data-delay="0">
         <div class="card-num">001 // SEARCH</div>
         <h3 class="card-title">Truegle</h3>
-        <div class="card-preview" onclick="openModal('Truegle','/apps/truegle/index.html','iframe')">
-          <iframe src="/apps/truegle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
+        <div class="card-preview" onclick="window.open('https://truegle.info','_blank','noopener')">
+          <img src="/brands/previews/truegle.png" alt="Truegle search homepage" loading="lazy"/>
+          <span class="expand-hint">click to open</span>
         </div>
         <p class="card-desc">Search Without Bias, Tracking or Censorship.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <!-- 002 FRUGLE -->
-      <div class="card gold" data-delay="1">
-        <div class="card-num">002 // DEALS</div>
-        <h3 class="card-title">Frugle</h3>
-        <div class="card-preview" onclick="openModal('Frugle','/apps/frugle/index.html','iframe')">
-          <iframe src="/apps/frugle/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
+        <div class="card-footer">
+          <span class="badge live">Live</span>
+          <a href="https://truegle.info" target="_blank" rel="noopener" class="card-link">visit</a>
         </div>
-        <p class="card-desc">From Scrap to Forge.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
-      <!-- 003 MUNCH -->
-      <div class="card" data-delay="3">
-        <div class="card-num">003 // ASSISTANT</div>
+      <!-- 002 MUNCH -->
+      <div class="card" data-delay="1">
+        <div class="card-num">002 // ASSISTANT</div>
         <h3 class="card-title">Munch</h3>
         <div class="card-preview" onclick="openModal('Munch','/apps/munch/index.html','iframe')">
           <iframe src="/apps/munch/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
@@ -635,9 +628,9 @@
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
-      <!-- 004 ASTROLOGY -->
-      <div class="card gold" data-delay="4">
-        <div class="card-num">004 // ASTROLOGY</div>
+      <!-- 003 ASTROLOGY -->
+      <div class="card gold" data-delay="2">
+        <div class="card-num">003 // ASTROLOGY</div>
         <h3 class="card-title">Astrology API</h3>
         <div class="card-preview" onclick="openModal('Astrology API','/apps/astrology/index.html','iframe')">
           <iframe src="/apps/astrology/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
@@ -647,46 +640,9 @@
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
       </div>
 
-      <!-- 005 WHISTLE STOP -->
-      <div class="card" data-delay="5">
-        <div class="card-num">005 // BARBERSHOP</div>
-        <h3 class="card-title">Whistle Stop</h3>
-        <div class="card-preview" onclick="openModal('Whistle Stop','/apps/whistle-stop/index.html','iframe')">
-          <iframe src="/apps/whistle-stop/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Modern barber & beauty shop platform. Booking, scheduling and clientele management built for the craft.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <!-- 006 OSINT -->
-      <div class="card purple" data-delay="6">
-        <div class="card-num">006 // OSINT</div>
-        <h3 class="card-title">OSINT Tool</h3>
-        <div class="card-preview" onclick="openModal('OSINT Tool','/apps/osint/index.html','iframe')">
-          <iframe src="/apps/osint/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Open-source intelligence gathering & harassment detection. Robust backend — frontend contribution welcome.</p>
-        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
-      </div>
-      <!-- 007 TRUEGLE MAPS -->
-      <div class="card gold" data-delay="7">
-        <div class="card-num">007 // MAPS</div>
-        <h3 class="card-title">Truegle Maps</h3>
-        <div class="card-preview" onclick="openModal('Truegle Maps','https://truegle-maps.pages.dev','iframe')">
-          <iframe src="https://truegle-maps.pages.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Open-street mapping with intelligent route optimization and privacy-first location data.</p>
-        <div class="card-footer">
-          <span class="badge dev">In Dev</span>
-          <a href="https://truegle-maps.pages.dev" target="_blank" class="card-link">visit</a>
-        </div>
-      </div>
-
-      <div class="card purple" data-delay="8">
-        <div class="card-num">008 // QUEUE</div>
+      <!-- 004 QUE — ON HOLD: may be fully built out and shopped around; revisit before changing -->
+      <div class="card purple" data-delay="3">
+        <div class="card-num">004 // QUEUE</div>
         <h3 class="card-title">Que</h3>
         <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
           <div class="preview-placeholder">
@@ -697,20 +653,6 @@
         </div>
         <p class="card-desc">Smart queue management for events & venues. Backend complete — UI in progress.</p>
         <div class="card-footer"><span class="badge wip">Needs UI</span></div>
-      </div>
-
-      <!-- 009 TRUMPAFI (moved to last position) -->
-      <div class="card purple" data-delay="9">
-        <div class="card-num">009 // VOICE</div>
-        <h3 class="card-title">TrumpAFi</h3>
-        <div class="card-preview" style="cursor:default;pointer-events:none;"><div class="preview-placeholder" style="background:rgba(0,0,0,0.7);"><div class="preview-icon">🔧</div><p style="color:#ffcc44;">Down for Maintenance</p></div>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Talk shit to the stupidest man in existence. Trust me, it's fun.</p>
-        <div class="card-footer">
-          <span class="badge live">Live</span>
-          <a href="https://trumpafi.online/app" target="_blank" class="card-link">visit</a>
-        </div>
       </div>
 
     </div>
