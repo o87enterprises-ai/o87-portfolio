@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bricc'd - Lego Studio</title>
+    <script type="module" crossorigin src="./assets/index-COCe6Vh0.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DGF2mJq4.css">
+  </head>
+  <body>
+    <div id="landing-overlay">
+      <div class="landing-card">
+        <h1>Bricc'd</h1>
+        <p>The Ultimate 3D Brick Studio</p>
+        <button id="start-btn">Start Building</button>
+      </div>
+    </div>
+
+    <div id="profile-ui" class="hidden">
+      <div class="profile-card">
+        <button id="close-profile">×</button>
+        <h2>Your Character</h2>
+        <div id="avatar-preview"></div>
+        <div class="avatar-controls">
+          <div class="control-group">
+            <label>Character Type</label>
+            <select id="gender-type">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Face Type</label>
+            <select id="face-type">
+              <option value="classic">Classic Smile</option>
+              <option value="cool">Sunglasses</option>
+              <option value="surprised">Surprised</option>
+              <option value="wink">Wink</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Head <input type="color" id="head-color" value="#ffff00"></label>
+            <label>Torso <input type="color" id="torso-color" value="#ff0000"></label>
+            <label>Legs <input type="color" id="legs-color" value="#0000ff"></label>
+          </div>
+        </div>
+        <button id="save-avatar">Save & Close</button>
+      </div>
+    </div>
+
+    <div id="toolbox" class="hidden">
+      <button id="open-profile">👤 Profile</button>
+      <button id="toggle-fullscreen">🖼 Full Screen</button>
+      <button id="hide-ui">👁 Hide UI</button>
+      <hr/>
+      <h3>File</h3>
+      <button id="save-local">💾 Save Local</button>
+      <button id="load-local">📂 Load Local</button>
+      <hr/>
+      <h3>Pieces</h3>
+      <div id="piece-list"></div>
+      <hr/>
+      <h3>Tools</h3>
+      <button id="align-view">Align View</button>
+      <button id="erase-mode">Eraser</button>
+      <button id="rotate-piece">Rotate</button>
+      <button id="lift-piece">Lift</button>
+      <button id="drop-piece">Drop</button>
+    </div>
+
+    <button id="unhide-ui" class="hidden">👁 Show UI</button>
+
+    <div id="movement-controls" class="hidden">
+      <div class="d-pad">
+        <button id="move-fwd" title="Forward">▲</button>
+        <div class="middle-row">
+          <button id="move-left" title="Left">◀</button>
+          <button id="move-back" title="Backward">▼</button>
+          <button id="move-right" title="Right">▶</button>
+        </div>
+      </div>
+      <div class="vertical-controls">
+        <button id="move-up" title="Up">⤒</button>
+        <button id="move-down" title="Down">⤓</button>
+      </div>
+    </div>
+
+    <div id="vr-controls"></div>
+
+    <canvas id="app"></canvas>
+  </body>
+</html>
