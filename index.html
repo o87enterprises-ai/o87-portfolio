@@ -324,8 +324,11 @@
       width:130px; height:130px; border-radius:50%;
       background:radial-gradient(circle,rgba(var(--a),0.1),transparent 80%); z-index:0;
     }
-    .card:hover { border-color:rgba(var(--a),0.5); background:rgba(var(--a),0.07); box-shadow:0 28px 56px -18px rgba(var(--a),0.3), 0 0 0 1px rgba(var(--a),0.2) inset; transform:translateY(-5px) scale(1.01) !important; }
-    .card:hover::before { opacity:1; }
+    /* hover-only effects: on touch screens a layout-shifting :hover swallows the first tap */
+    @media (hover:hover) and (pointer:fine) {
+      .card:hover { border-color:rgba(var(--a),0.5); background:rgba(var(--a),0.07); box-shadow:0 28px 56px -18px rgba(var(--a),0.3), 0 0 0 1px rgba(var(--a),0.2) inset; transform:translateY(-5px) scale(1.01) !important; }
+      .card:hover::before { opacity:1; }
+    }
     .purple { --a:192,80,255; }
     .gold   { --a:255,204,68; }
     .card-num { font-family:'Orbitron',sans-serif; font-size:0.6rem; letter-spacing:0.3em; color:var(--muted); margin-bottom:1rem; position:relative; z-index:2; }
@@ -341,7 +344,9 @@
 
     /* card preview thumbnail */
     .card-preview { position:relative; width:100%; height:115px; margin:0.75rem 0 1.1rem; border-radius:10px; overflow:hidden; cursor:pointer; border:1px solid rgba(var(--a),0.15); transition:height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s; background:rgba(0,0,0,0.4); }
-    .card-preview:hover { height:172px; border-color:rgba(var(--a),0.5); }
+    @media (hover:hover) and (pointer:fine) {
+      .card-preview:hover { height:172px; border-color:rgba(var(--a),0.5); }
+    }
     .card-preview iframe { width:200%; height:200%; transform:scale(0.5); transform-origin:top left; border:none; pointer-events:none; }
     .card-preview img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
     .card-preview .preview-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(135deg,rgba(var(--a),0.06),rgba(0,0,0,0.5)); }
@@ -893,7 +898,7 @@
         <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 013 OPEN GRANTS -->
+      <!-- 013 OPEN GRANTS (commented out for now)
       <div class="card purple" data-delay="12">
         <div class="card-num">013 // AUTOMATION</div>
         <h3 class="card-title">Open Grants</h3>
@@ -908,6 +913,7 @@
         <div class="card-footer"><span class="badge wip">Needs UI</span></div>
         <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
+      -->
 
       <!-- 014 LEANA GIT -->
       <div class="card gold" data-delay="13">
