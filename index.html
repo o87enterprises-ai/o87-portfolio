@@ -209,6 +209,16 @@
       transition:border-color 0.2s, background 0.2s, transform 0.2s;
     }
     .btn-outline:hover { border-color:rgba(255,255,255,0.5); background:rgba(255,255,255,0.05); transform:translateY(-2px); }
+    .btn-contact {
+      font-family:'Orbitron',sans-serif; font-size:0.62rem; letter-spacing:0.22em;
+      text-transform:uppercase; text-decoration:none; padding:0.85rem 1.6rem;
+      border-radius:999px; background:transparent; color:var(--white);
+      border:1px solid rgba(255,255,255,0.25); cursor:pointer;
+      display:inline-flex; align-items:center; gap:0.5rem;
+      transition:border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .btn-contact:hover { border-color:rgba(0,242,255,0.6); background:rgba(0,242,255,0.06); transform:translateY(-2px); }
+    .btn-contact svg { width:14px; height:14px; flex:none; }
     .scroll-hint {
       position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
       display:flex; flex-direction:column; align-items:center; gap:0.6rem;
@@ -235,6 +245,25 @@
     }
 
     /* ════════════════════════ SERVICES ════════════════════════ */
+    .value-panel {
+      border:1px solid var(--border); border-radius:20px;
+      background:rgba(6,5,18,0.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      padding:2rem 2.2rem; overflow:hidden;
+    }
+    .value-panel-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; cursor:pointer; }
+    .value-panel-toggle {
+      flex:none; width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+      background:rgba(255,255,255,0.03); color:var(--muted); font-size:1.1rem; line-height:1;
+      display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform 0.3s, border-color 0.2s, color 0.2s;
+    }
+    .value-panel-toggle:hover { border-color:rgba(0,242,255,0.4); color:var(--cyan); }
+    .value-panel.minimized .value-panel-toggle { transform:rotate(180deg); }
+    .value-panel-body {
+      display:grid; grid-template-rows:1fr; transition:grid-template-rows 0.4s ease, opacity 0.3s ease, margin-top 0.4s ease;
+      margin-top:2rem; opacity:1;
+    }
+    .value-panel-body > div { overflow:hidden; }
+    .value-panel.minimized .value-panel-body { grid-template-rows:0fr; opacity:0; margin-top:0; }
     .services-grid {
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -242,6 +271,10 @@
     }
     @media(max-width:960px){ .services-grid{ grid-template-columns:repeat(2,1fr); } }
     @media(max-width:600px){ .services-grid{ grid-template-columns:1fr; } }
+    .value-panel .service-card { background:transparent; border:none; border-top:1px solid var(--border); border-radius:0; padding:1.4rem 0.2rem 0; }
+    .value-panel .service-card:nth-child(-n+3) { border-top:none; padding-top:0; }
+    @media(max-width:960px){ .value-panel .service-card:nth-child(2) { border-top:none; padding-top:0; } }
+    @media(max-width:600px){ .value-panel .service-card { border-top:1px solid var(--border); padding-top:1.4rem; } .value-panel .service-card:first-child { border-top:none; padding-top:0; } }
 
     .service-card {
       background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
@@ -310,10 +343,50 @@
     .card-preview { position:relative; width:100%; height:115px; margin:0.75rem 0 1.1rem; border-radius:10px; overflow:hidden; cursor:pointer; border:1px solid rgba(var(--a),0.15); transition:height 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.3s; background:rgba(0,0,0,0.4); }
     .card-preview:hover { height:172px; border-color:rgba(var(--a),0.5); }
     .card-preview iframe { width:200%; height:200%; transform:scale(0.5); transform-origin:top left; border:none; pointer-events:none; }
+    .card-preview img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
     .card-preview .preview-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(135deg,rgba(var(--a),0.06),rgba(0,0,0,0.5)); }
     .card-preview .preview-placeholder .preview-icon { font-size:1.7rem; opacity:0.6; }
     .card-preview .preview-placeholder p { font-family:'Orbitron',sans-serif; font-size:0.52rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(var(--a),0.7); }
     .card-preview .expand-hint { position:absolute; bottom:6px; right:8px; font-family:'Orbitron',sans-serif; font-size:0.48rem; letter-spacing:0.2em; color:rgba(var(--a),0.6); text-transform:uppercase; pointer-events:none; }
+
+    /* ════════════════════════ VIEW TOGGLE (grid/list) ════════════════════════ */
+    .section-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+    .view-toggle { display:inline-flex; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .view-toggle button {
+      font-family:'Orbitron',sans-serif; font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
+      background:rgba(6,5,18,0.6); color:var(--muted); border:none; padding:0.55rem 1.1rem; cursor:pointer;
+      transition:background 0.2s, color 0.2s;
+    }
+    .view-toggle button.active { background:rgba(0,242,255,0.12); color:var(--cyan); }
+    .view-toggle button:not(:last-child) { border-right:1px solid var(--border); }
+
+    /* compact/grid card mode: thumbnail + title only, expandable */
+    .projects-grid.compact { grid-template-columns:repeat(4,1fr); gap:0.9rem; }
+    @media(max-width:960px){ .projects-grid.compact{ grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:600px){ .projects-grid.compact{ grid-template-columns:repeat(2,1fr); gap:0.6rem; } }
+    .projects-grid.compact .card { padding:0.7rem 0.7rem 0.9rem; border-radius:14px; }
+    .projects-grid.compact .card-num { display:none; }
+    .projects-grid.compact .card-title { font-size:0.82rem; margin-bottom:0.4rem; text-align:center; }
+    .projects-grid.compact .card-preview { height:auto; aspect-ratio:4/3; margin:0 0 0.5rem; }
+    .projects-grid.compact .card-preview:hover { height:auto; }
+    .projects-grid.compact .card-desc,
+    .projects-grid.compact .card-footer { display:none; }
+    .projects-grid.compact .card.expanded .card-desc,
+    .projects-grid.compact .card.expanded .card-footer { display:block; margin-top:0.6rem; }
+    .projects-grid.compact .card.expanded .card-footer { display:flex; }
+    .card-expand-btn {
+      display:none; width:100%; text-align:center; background:none; border:none; color:var(--muted);
+      font-family:'Orbitron',sans-serif; font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase;
+      cursor:pointer; padding:0.3rem 0; margin-top:0.2rem;
+    }
+    .projects-grid.compact .card-expand-btn { display:block; }
+    .projects-grid.compact .card.expanded .card-expand-btn span { transform:rotate(180deg); }
+    .card-expand-btn span { display:inline-block; transition:transform 0.2s; margin-left:0.3rem; }
+
+    .logo-showcase.list-mode { grid-template-columns:1fr; max-width:640px; margin:0 auto; }
+    .logo-showcase.list-mode .logo-slot { display:flex; align-items:center; gap:1.2rem; text-align:left; }
+    .logo-showcase.list-mode .logo-placeholder { aspect-ratio:auto; width:90px; height:68px; flex:none; }
+    .logo-showcase.list-mode .logo-slot-name { margin-top:0; font-size:0.7rem; }
 
     /* ════════════════════════ BRANDING ════════════════════════ */
     .branding-intro { font-size:1rem; line-height:1.8; color:var(--muted); max-width:500px; margin-bottom:3rem; letter-spacing:0.03em; }
@@ -374,6 +447,8 @@
     .modal-placeholder h3 { font-family:'Orbitron',sans-serif; font-size:1.4rem; color:var(--white); }
     .modal-placeholder p { font-size:1rem; max-width:400px; text-align:center; line-height:1.7; }
     .modal-badge { font-family:'Orbitron',sans-serif; font-size:0.58rem; letter-spacing:0.3em; padding:0.4rem 1.2rem; border-radius:999px; border:1px solid var(--cyan); color:var(--cyan); text-transform:uppercase; }
+    .modal-image-placeholder { padding:2rem; overflow-y:auto; }
+    .modal-image-placeholder img { max-width:100%; max-height:60vh; border-radius:14px; border:1px solid var(--border); object-fit:contain; }
 
     /* ════════════════════════ DESKTOP MODE MODAL ════════════════════════ */
     .desktop-mode-modal {
@@ -562,49 +637,73 @@
     <p class="hero-sub">software &nbsp;·&nbsp; security &nbsp;·&nbsp; design &nbsp;·&nbsp; intelligence</p>
     <div class="hero-actions">
       <a href="#projects" class="btn-primary">View Our Work</a>
-      <a href="#contact" class="btn-outline">Get In Touch</a>
+      <a href="tel:5416230460" class="btn-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Call / Text
+      </a>
+      <a href="mailto:o87enterprises@gmail.com" class="btn-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6c0-1.1-.9-2-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6zm-2 0-8 5-8-5"/></svg>
+        Email
+      </a>
     </div>
     <div class="scroll-hint">scroll</div>
   </section>
 
   <!-- ══ VALUE PROPOSITION ══ -->
   <section class="section-wrap" id="value-prop">
-    <h2 class="section-heading">Creation From Your Imagination</h2>
-    <p class="section-desc">Pushing the limits of Software Innovation</p>
-    <div class="services-grid">
-      <div class="service-card">
-        <span class="service-icon">🎯</span>
-        <span class="service-tag">Application Saturation</span>
-        <div class="service-name">Built to Stand Out</div>
-        <p class="service-desc">Thousands of apps launch every day. Blending in isn't a strategy — we build for the ones that actually get noticed.</p>
+    <div class="value-panel" id="valuePanel">
+      <div class="value-panel-header" onclick="const p=document.getElementById('valuePanel');p.classList.toggle('minimized');this.querySelector('.value-panel-toggle').textContent=p.classList.contains('minimized')?'+':'−';">
+        <div>
+          <h2 class="section-heading" style="margin-bottom:0.4rem;">Creation From Your Imagination</h2>
+          <p class="section-desc" style="margin-bottom:0;">Pushing the limits of Software Innovation</p>
+        </div>
+        <button type="button" class="value-panel-toggle" aria-label="minimize">−</button>
       </div>
-      <div class="service-card">
-        <span class="service-icon">⚡</span>
-        <span class="service-tag">Vibe Code &lt; Cheat Code</span>
-        <div class="service-name">Security Isn't Optional</div>
-        <p class="service-desc">Copy-paste "vibe coded" apps share the same shortcuts — and the same exploits. We build security in from the start, not bolt it on after.</p>
-      </div>
-      <div class="service-card">
-        <span class="service-icon">✦</span>
-        <span class="service-tag">100% Customization</span>
-        <div class="service-name">Tailored, Not Templated</div>
-        <p class="service-desc">Every project is built from the ground up around your actual needs. No templates, no ceilings — just what you need, built right.</p>
+      <div class="value-panel-body">
+        <div class="services-grid">
+          <div class="service-card">
+            <span class="service-icon">🎯</span>
+            <span class="service-tag">Application Saturation</span>
+            <div class="service-name">Built to Stand Out</div>
+            <p class="service-desc">Thousands of apps launch every day. Blending in isn't a strategy — we build for the ones that actually get noticed.</p>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">⚡</span>
+            <span class="service-tag">Vibe Code &lt; Cheat Code</span>
+            <div class="service-name">Security Isn't Optional</div>
+            <p class="service-desc">Copy-paste "vibe coded" apps share the same shortcuts — and the same exploits. We build security in from the start, not bolt it on after.</p>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">✦</span>
+            <span class="service-tag">100% Customization</span>
+            <div class="service-name">Tailored, Not Templated</div>
+            <p class="service-desc">Every project is built from the ground up around your actual needs. No templates, no ceilings — just what you need, built right.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ══ PROJECTS ══ -->
   <section class="section-wrap" id="projects" style="padding-top:0;">
-    <p class="section-label">— Ui/Ux Previews</p>
-    <h2 class="section-heading">Software Showcase <span style="font-size:0.5em; font-weight:400; color:var(--muted);">(demo functionality)</span></h2>
-    <div class="projects-grid">
+    <div class="section-toolbar">
+      <div>
+        <p class="section-label">— Ui/Ux Previews</p>
+        <h2 class="section-heading">Software Showcase <span style="font-size:0.5em; font-weight:400; color:var(--muted);">(demo functionality)</span></h2>
+      </div>
+      <div class="view-toggle" data-target="projectsGrid">
+        <button type="button" class="view-grid-btn">Grid</button>
+        <button type="button" class="view-list-btn active">List</button>
+      </div>
+    </div>
+    <div class="projects-grid" id="projectsGrid">
 
       <!-- 001 TRUEGLE -->
       <div class="card purple" data-delay="0">
         <div class="card-num">001 // SURF ENGINE</div>
         <h3 class="card-title">Truegle</h3>
-        <div class="card-preview" onclick="openModal('Truegle','https://truegle.info','iframe')">
-          <iframe src="https://truegle.info" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <div class="card-preview" onclick="openModal('Truegle','https://truegle.info','image','',&quot;The future of Search has arrived.&quot;,'previews/truegle.jpg')">
+          <img src="previews/truegle.jpg" alt="Truegle" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">The future of Search has arrived.</p>
@@ -612,40 +711,15 @@
           <span class="badge live">Live</span>
           <a href="https://truegle.info" target="_blank" class="card-link">visit</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 002 ASTROLOGY -->
+      <!-- 002 MONKEYITM-VM -->
       <div class="card gold" data-delay="1">
-        <div class="card-num">002 // ASTROLOGY</div>
-        <h3 class="card-title">Astrology API</h3>
-        <div class="card-preview" onclick="openModal('Astrology API','/apps/astrology/index.html','iframe')">
-          <iframe src="/apps/astrology/index.html" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Celestial data engine with rich personalized interpretations. Built for developers and creatives.</p>
-        <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <div class="card purple" data-delay="2">
-        <div class="card-num">003 // QUEUE</div>
-        <h3 class="card-title">Que</h3>
-        <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
-          <div class="preview-placeholder">
-            <div class="preview-icon">📋</div>
-            <p>Preview coming soon</p>
-          </div>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">Smart queue management for events & venues. Backend complete — UI in progress.</p>
-        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
-      </div>
-
-      <!-- 004 MONKEYITM-VM -->
-      <div class="card gold" data-delay="3">
-        <div class="card-num">004 // AI SECURITY</div>
+        <div class="card-num">002 // AI SECURITY</div>
         <h3 class="card-title">MonkeyITM-VM</h3>
         <div class="card-preview" onclick="openModal('MonkeyITM-VM','https://monkeyitm-vm.o87enterprises.workers.dev','iframe')">
-          <iframe src="https://monkeyitm-vm.o87enterprises.workers.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+          <img src="previews/monkeyitm.jpg" alt="MonkeyITM-VM" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Broker-in-the-middle containment for AI agents — zero ambient authority, every action logged before it happens. Open source, pre-alpha.</p>
@@ -654,14 +728,15 @@
           <a href="https://monkeyitm-vm.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
           <a href="https://github.com/o87enterprises-ai/MonkeyITM-VM" target="_blank" class="card-link">code</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 005 OPENOCCHIO -->
-      <div class="card purple" data-delay="4">
-        <div class="card-num">005 // AI TRUST</div>
+      <!-- 003 OPENOCCHIO -->
+      <div class="card purple" data-delay="2">
+        <div class="card-num">003 // AI TRUST</div>
         <h3 class="card-title">OpenOcchio</h3>
         <div class="card-preview" onclick="openModal('OpenOcchio','https://openocchio.pages.dev','iframe')">
-          <iframe src="https://openocchio.pages.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+          <img src="previews/openocchio.jpg" alt="OpenOcchio" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">A real-time "truth-meter" for LLM responses — a Pinocchio's Nose UI that grows and reddens as AI confidence drops.</p>
@@ -669,29 +744,15 @@
           <span class="badge live">Live</span>
           <a href="https://openocchio.pages.dev" target="_blank" class="card-link">visit</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 006 BRICC'D -->
-      <div class="card gold" data-delay="5">
-        <div class="card-num">006 // 3D BUILD</div>
-        <h3 class="card-title">Bricc'd</h3>
-        <div class="card-preview" onclick="openModal('Bricc\'d','https://briccd.o87enterprises.workers.dev','iframe')">
-          <iframe src="https://briccd.o87enterprises.workers.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">A high-performance, web-based 3D brick building studio — real-time grid snapping, local-only saves, and full Meta Quest WebXR support.</p>
-        <div class="card-footer">
-          <span class="badge live">Live</span>
-          <a href="https://briccd.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
-        </div>
-      </div>
-
-      <!-- 007 VIRTUAL ELECTRONICS LAB -->
-      <div class="card purple" data-delay="6">
-        <div class="card-num">007 // CIRCUITS</div>
+      <!-- 004 VIRTUAL ELECTRONICS LAB -->
+      <div class="card gold" data-delay="3">
+        <div class="card-num">004 // CIRCUITS</div>
         <h3 class="card-title">OpenCircuitry</h3>
         <div class="card-preview" onclick="openModal('OpenCircuitry','https://virtual-electronics-lab.pages.dev','iframe')">
-          <iframe src="https://virtual-electronics-lab.pages.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+          <img src="previews/opencircuitry.jpg" alt="OpenCircuitry" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">A virtual electronics lab for building and simulating circuits in the browser — no breadboard required.</p>
@@ -699,11 +760,44 @@
           <span class="badge live">Live</span>
           <a href="https://virtual-electronics-lab.pages.dev" target="_blank" class="card-link">visit</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 008 METCLAWPOLIS -->
-      <div class="card gold" data-delay="7">
-        <div class="card-num">008 // AGENT ECONOMY</div>
+      <!-- 005 ONLY BANDS / CONTENT MINT -->
+      <div class="card purple" data-delay="4">
+        <div class="card-num">005 // CREATOR ECONOMY</div>
+        <h3 class="card-title">OnlyBands</h3>
+        <div class="card-preview" onclick="openModal('OnlyBands','https://onlybands-preview.o87enterprises.workers.dev','iframe')">
+          <img src="previews/onlybands.jpg" alt="OnlyBands" loading="lazy">
+          <span class="expand-hint">click to expand</span>
+        </div>
+        <p class="card-desc">CreatorOS marketplace on Ethereum — launch your own creator token, liquidity vault, and NFT collection in one transaction.</p>
+        <div class="card-footer">
+          <span class="badge dev">Preview</span>
+          <a href="https://onlybands-preview.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
+        </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
+      </div>
+
+      <!-- 006 SALAWN -->
+      <div class="card gold" data-delay="5">
+        <div class="card-num">006 // LOCAL SERVICE</div>
+        <h3 class="card-title">Salawn</h3>
+        <div class="card-preview" onclick="openModal('Salawn','https://salawn.pages.dev','iframe')">
+          <img src="previews/salawn.jpg" alt="Salawn" loading="lazy">
+          <span class="expand-hint">click to expand</span>
+        </div>
+        <p class="card-desc">On-demand subscription lawn care booking for Cottage Grove & Creswell, Oregon.</p>
+        <div class="card-footer">
+          <span class="badge live">Live</span>
+          <a href="https://salawn.pages.dev" target="_blank" class="card-link">visit</a>
+        </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
+      </div>
+
+      <!-- 007 METCLAWPOLIS -->
+      <div class="card purple" data-delay="6">
+        <div class="card-num">007 // AGENT ECONOMY</div>
         <h3 class="card-title">MetClawPolis</h3>
         <div class="card-preview" onclick="openModal('MetClawPolis','','placeholder','🐾','Decentralized agentic commerce platform — AI agents with budgets, DIDs, and a proof-of-work action log.')">
           <div class="preview-placeholder">
@@ -717,26 +811,60 @@
           <span class="badge dev">In Dev</span>
           <a href="https://github.com/o87enterprises-ai/MetClawPolis" target="_blank" class="card-link">code</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 009 SALAWN -->
-      <div class="card purple" data-delay="8">
-        <div class="card-num">009 // LOCAL SERVICE</div>
-        <h3 class="card-title">Salawn</h3>
-        <div class="card-preview" onclick="openModal('Salawn','https://salawn.pages.dev','iframe')">
-          <iframe src="https://salawn.pages.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      <!-- 008 BRICC'D -->
+      <div class="card gold" data-delay="7">
+        <div class="card-num">008 // 3D BUILD</div>
+        <h3 class="card-title">Bricc'd</h3>
+        <div class="card-preview" onclick="openModal('Bricc\'d','https://briccd.o87enterprises.workers.dev','iframe')">
+          <img src="previews/briccd.jpg" alt="Bricc'd" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
-        <p class="card-desc">On-demand subscription lawn care booking for Cottage Grove & Creswell, Oregon.</p>
+        <p class="card-desc">A high-performance, web-based 3D brick building studio — real-time grid snapping, local-only saves, and full Meta Quest WebXR support.</p>
         <div class="card-footer">
           <span class="badge live">Live</span>
-          <a href="https://salawn.pages.dev" target="_blank" class="card-link">visit</a>
+          <a href="https://briccd.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
-      <!-- 010 CHELLE SHOCK -->
+      <!-- 009 ASTROLOGY -->
+      <div class="card purple" data-delay="8">
+        <div class="card-num">009 // ASTROLOGY</div>
+        <h3 class="card-title">Astrology API</h3>
+        <div class="card-preview" onclick="openModal('Astrology API','/apps/astrology/index.html','iframe')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">✦</div>
+            <p>In dev</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
+        <p class="card-desc">Celestial data engine with rich personalized interpretations. Built for developers and creatives.</p>
+        <div class="card-footer"><span class="badge dev">In Dev</span></div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
+      </div>
+
+      <!-- 010 QUEUE -->
       <div class="card gold" data-delay="9">
-        <div class="card-num">010 // SURVIVAL GEAR</div>
+        <div class="card-num">010 // QUEUE</div>
+        <h3 class="card-title">Que</h3>
+        <div class="card-preview" onclick="openModal('Que','','placeholder','📋','Smart queue management. Backend ready, UI in progress.')">
+          <div class="preview-placeholder">
+            <div class="preview-icon">📋</div>
+            <p>Preview coming soon</p>
+          </div>
+          <span class="expand-hint">click to expand</span>
+        </div>
+        <p class="card-desc">Smart queue management for events & venues. Backend complete — UI in progress.</p>
+        <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
+      </div>
+
+      <!-- 011 CHELLE SHOCK -->
+      <div class="card purple" data-delay="10">
+        <div class="card-num">011 // SURVIVAL GEAR</div>
         <h3 class="card-title">Chelle Shock</h3>
         <div class="card-preview" onclick="openModal('Chelle Shock','','placeholder','⚡','Apocalypse-ready pop-up shelters and portable homes.')">
           <div class="preview-placeholder">
@@ -747,21 +875,7 @@
         </div>
         <p class="card-desc">Apocalypse-ready pop-up shelters and portable homes — tactical, rugged, deployable.</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
-      </div>
-
-      <!-- 011 ONLY BANDS / CONTENT MINT -->
-      <div class="card purple" data-delay="10">
-        <div class="card-num">011 // CREATOR ECONOMY</div>
-        <h3 class="card-title">OnlyBands</h3>
-        <div class="card-preview" onclick="openModal('OnlyBands','https://onlybands-preview.o87enterprises.workers.dev','iframe')">
-          <iframe src="https://onlybands-preview.o87enterprises.workers.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
-          <span class="expand-hint">click to expand</span>
-        </div>
-        <p class="card-desc">CreatorOS marketplace on Ethereum — launch your own creator token, liquidity vault, and NFT collection in one transaction.</p>
-        <div class="card-footer">
-          <span class="badge dev">Preview</span>
-          <a href="https://onlybands-preview.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
-        </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
       <!-- 012 SHED HAPPENS -->
@@ -769,7 +883,7 @@
         <div class="card-num">012 // CUSTOM SHEDS</div>
         <h3 class="card-title">ShedHappens</h3>
         <div class="card-preview" onclick="openModal('ShedHappens','https://shedhappens-preview.o87enterprises.workers.dev','iframe')">
-          <iframe src="https://shedhappens-preview.o87enterprises.workers.dev" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+          <img src="previews/shedhappens.jpg" alt="ShedHappens" loading="lazy">
           <span class="expand-hint">click to expand</span>
         </div>
         <p class="card-desc">Premium custom sheds with an interactive 3D hero, real-time Rent-To-Own calculator, and local SEO pages across 20+ Oregon cities.</p>
@@ -777,6 +891,7 @@
           <span class="badge dev">Preview</span>
           <a href="https://shedhappens-preview.o87enterprises.workers.dev" target="_blank" class="card-link">visit</a>
         </div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
       <!-- 013 OPEN GRANTS -->
@@ -792,6 +907,7 @@
         </div>
         <p class="card-desc">Automated grant hunting: scrapes grants daily, scores them against your profile, drafts proposals with AI, and submits after your approval.</p>
         <div class="card-footer"><span class="badge wip">Needs UI</span></div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
       <!-- 014 LEANA GIT -->
@@ -807,6 +923,7 @@
         </div>
         <p class="card-desc">Campaign site for LeAna Powell — "Mama Bear for Oakland Schools."</p>
         <div class="card-footer"><span class="badge dev">In Dev</span></div>
+        <button type="button" class="card-expand-btn" onclick="event.stopPropagation();this.closest('.card').classList.toggle('expanded')">More <span>▾</span></button>
       </div>
 
     </div>
@@ -814,27 +931,29 @@
 
   <!-- ══ BRANDING ══ -->
   <section class="section-wrap" id="branding" style="padding-top:0;">
-    <p class="section-label">— identity systems</p>
-    <h2 class="section-heading">Branding & Logos</h2>
+    <div class="section-toolbar">
+      <div>
+        <p class="section-label">— identity systems</p>
+        <h2 class="section-heading">Branding & Logos</h2>
+      </div>
+      <div class="view-toggle" data-target="logoShowcase">
+        <button type="button" class="view-grid-btn active">Grid</button>
+        <button type="button" class="view-list-btn">List</button>
+      </div>
+    </div>
     <p class="branding-intro">Crafting visual identities from the ground up — marks that carry weight across every surface, screen, and universe.</p>
-    <div class="logo-showcase">
+    <div class="logo-showcase" id="logoShowcase">
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/truegle.png" alt="Truegle"/></div><p class="logo-slot-name">Truegle</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/logo.png" alt="Munch"/></div><p class="logo-slot-name">Munch</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/whistle-stop.png" alt="Whistle Stop"/></div><p class="logo-slot-name">Whistle Stop</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/frugle-v2.png" alt="Frugle"/></div><p class="logo-slot-name">Frugle</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/aura.png" alt="Aura"/></div><p class="logo-slot-name">Aura</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/Copilot_20260314_204725.png" alt="TrumpAFi"/></div><p class="logo-slot-name">TrumpAFi</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/Copilot_20260207_121828.png" alt="Whistle Stop Menu"/></div><p class="logo-slot-name">Whistle Stop — Menu</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/460232422_1490612778998969_1088007044468279513_n.jpg" alt="DuckE Duck"/></div><p class="logo-slot-name">DuckE Duck</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/481089662_1619933329400246_4269349465778689922_n.jpg" alt="DopeTunes"/></div><p class="logo-slot-name">DopeTunes</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/monkeyitm.png" alt="MonkeyITM-VM"/></div><p class="logo-slot-name">MonkeyITM-VM</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/openocchio.png" alt="OpenOcchio"/></div><p class="logo-slot-name">OpenOcchio</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/briccd.svg" alt="Bricc'd"/></div><p class="logo-slot-name">Bricc'd</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/metclawpolis.png" alt="MetClawPolis"/></div><p class="logo-slot-name">MetClawPolis</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/salawn.png" alt="Salawn"/></div><p class="logo-slot-name">Salawn</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/chelleshock.png" alt="Chelle Shock"/></div><p class="logo-slot-name">Chelle Shock</p></div>
       <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/shedhappens.png" alt="ShedHappens"/></div><p class="logo-slot-name">ShedHappens</p></div>
-      <div class="logo-slot"><div class="logo-placeholder"><img src="/brands/leanagit.png" alt="LeAna Powell Campaign"/></div><p class="logo-slot-name">LeAna Powell Campaign</p></div>
     </div>
   </section>
 
@@ -1349,13 +1468,38 @@ document.head.appendChild(toastStyle);
     });
   }, { threshold:0.1 });
   document.querySelectorAll('.logo-slot').forEach(s=>so.observe(s));
+
+  // ── view toggle (grid/list) ──
+  function setView(toggleEl, mode) {
+    const target = document.getElementById(toggleEl.dataset.target);
+    const gridBtn = toggleEl.querySelector('.view-grid-btn');
+    const listBtn = toggleEl.querySelector('.view-list-btn');
+    const compactClass = target.id === 'projectsGrid' ? 'compact' : 'list-mode';
+    if (mode === 'grid') {
+      if (target.id === 'projectsGrid') target.classList.add('compact');
+      else target.classList.remove('list-mode');
+      gridBtn.classList.add('active'); listBtn.classList.remove('active');
+    } else {
+      if (target.id === 'projectsGrid') target.classList.remove('compact');
+      else target.classList.add('list-mode');
+      listBtn.classList.add('active'); gridBtn.classList.remove('active');
+    }
+  }
+  document.querySelectorAll('.view-toggle').forEach(toggle => {
+    toggle.querySelector('.view-grid-btn').addEventListener('click', () => setView(toggle, 'grid'));
+    toggle.querySelector('.view-list-btn').addEventListener('click', () => setView(toggle, 'list'));
+  });
+  // default to grid view on mobile viewports
+  if (window.innerWidth <= 640) {
+    document.querySelectorAll('.view-toggle').forEach(toggle => setView(toggle, 'grid'));
+  }
 })();
 </script>
 
 <!-- modal (plain script) -->
 <script>
-function openModal(title, url, type, icon, desc) {
-  icon=icon||''; desc=desc||'';
+function openModal(title, url, type, icon, desc, img) {
+  icon=icon||''; desc=desc||''; img=img||'';
   const modal=document.getElementById('projectModal');
   const body=document.getElementById('modalBody');
   document.getElementById('modalTitle').textContent=title;
@@ -1363,6 +1507,8 @@ function openModal(title, url, type, icon, desc) {
   if(type==='iframe'&&url){
     const f=document.createElement('iframe');
     f.src=url; f.allow='microphone; autoplay'; body.appendChild(f);
+  } else if(type==='image'&&img){
+    body.innerHTML=`<div class="modal-placeholder modal-image-placeholder"><img src="${img}" alt="${title}"><p>${desc}</p>${url?`<a href="${url}" target="_blank" class="btn-outline" style="margin-top:1rem;">visit site →</a>`:''}</div>`;
   } else {
     body.innerHTML=`<div class="modal-placeholder"><div class="modal-icon">${icon}</div><h3>${title}</h3><p>${desc}</p><span class="modal-badge">Preview Coming Soon</span></div>`;
   }
