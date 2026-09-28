@@ -455,123 +455,6 @@
     .modal-image-placeholder { padding:2rem; overflow-y:auto; }
     .modal-image-placeholder img { max-width:100%; max-height:60vh; border-radius:14px; border:1px solid var(--border); object-fit:contain; }
 
-    /* ════════════════════════ DESKTOP MODE MODAL ════════════════════════ */
-    .desktop-mode-modal {
-      position: fixed; inset: 0; z-index: 2000;
-      background: rgba(4, 3, 13, 0.98);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    .desktop-mode-modal.open { opacity: 1; pointer-events: all; }
-    .desktop-mode-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: rgba(6, 5, 18, 0.6);
-      color: var(--white);
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      z-index: 10;
-    }
-    .desktop-mode-close:hover {
-      background: rgba(0, 242, 255, 0.1);
-      border-color: var(--cyan);
-      color: var(--cyan);
-      transform: rotate(90deg);
-    }
-    .desktop-mode-content {
-      max-width: 480px; width: 90%;
-      background: rgba(6, 5, 18, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 2.5rem 2rem;
-      text-align: center;
-      position: relative;
-      transform: scale(0.92) translateY(20px);
-      transition: transform 0.4s ease;
-    }
-    .desktop-mode-modal.open .desktop-mode-content {
-      transform: scale(1) translateY(0);
-    }
-    .desktop-mode-icon {
-      font-size: 3.5rem; margin-bottom: 1rem;
-      filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
-    }
-    .desktop-mode-label {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.55rem; letter-spacing: 0.4em;
-      text-transform: uppercase; color: var(--cyan);
-      text-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
-      margin-bottom: 0.8rem; display: block;
-    }
-    .desktop-mode-heading {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem; font-weight: 700;
-      color: var(--white); margin-bottom: 0.8rem;
-    }
-    .desktop-mode-desc {
-      font-size: 0.95rem; color: var(--muted);
-      line-height: 1.7; margin-bottom: 1.8rem;
-    }
-    .desktop-mode-actions {
-      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
-    }
-    .desktop-mode-actions button {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.6rem; letter-spacing: 0.22em;
-      text-transform: uppercase;
-      padding: 0.8rem 1.8rem; border-radius: 999px;
-      cursor: pointer; transition: all 0.2s;
-      border: none;
-    }
-    .btn-enter-desktop {
-      background: linear-gradient(135deg, #00f2ff, #00a8cc);
-      color: #000; font-weight: 600;
-      box-shadow: 0 8px 28px rgba(0, 242, 255, 0.35);
-    }
-    .btn-enter-desktop:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 14px 40px rgba(0, 242, 255, 0.5);
-      filter: brightness(1.1);
-    }
-    .btn-stay-mobile {
-      background: transparent;
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    }
-    .btn-stay-mobile:hover {
-      border-color: rgba(255, 255, 255, 0.5) !important;
-      background: rgba(255, 255, 255, 0.05);
-      transform: translateY(-2px);
-    }
-    .desktop-mode-hint {
-      margin-top: 1.5rem; padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.8rem; color: var(--muted);
-    }
-    .desktop-mode-hint kbd {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.65rem;
-      background: rgba(0, 242, 255, 0.1);
-      border: 1px solid rgba(0, 242, 255, 0.3);
-      border-radius: 6px;
-      padding: 0.2rem 0.5rem;
-      color: var(--cyan);
-    }
-
     /* ── FOOTER ── */
     footer { border-top:1px solid var(--border); padding:3rem 2rem; text-align:center; font-size:0.82rem; letter-spacing:0.12em; color:var(--muted); position:relative; z-index:10; background:rgba(4,3,13,0.4); backdrop-filter:blur(8px); }
     footer .glow { color:var(--cyan); text-shadow:0 0 15px rgba(0,242,255,0.7); font-weight:500; }
@@ -590,29 +473,6 @@
     <button class="modal-close" onclick="closeModal()">✕ &nbsp;close</button>
   </div>
   <div class="modal-body" id="modalBody"></div>
-</div>
-
-<!-- DESKTOP MODE MODAL -->
-<div class="desktop-mode-modal" id="desktopModeModal" onclick="closeDesktopModeModalOnBackdrop(event)">
-  <div class="desktop-mode-content" onclick="event.stopPropagation()">
-    <!-- Close X button -->
-    <button class="desktop-mode-close" onclick="closeDesktopModeModal()" aria-label="Close">✕</button>
-    
-    <div class="desktop-mode-icon">🖥️</div>
-    <span class="desktop-mode-label">Best Experience</span>
-    <h2 class="desktop-mode-heading">Enter Desktop Mode</h2>
-    <p class="desktop-mode-desc">
-      This site is designed for desktop viewing. For the best experience with our 3D planet
-      and interactive features, we recommend viewing in desktop mode or on a larger screen.
-    </p>
-    <div class="desktop-mode-actions">
-      <button class="btn-enter-desktop" onclick="enterDesktopMode()">Enter Desktop Mode</button>
-      <button class="btn-stay-mobile" onclick="stayMobile()">Stay in Mobile</button>
-    </div>
-    <div class="desktop-mode-hint">
-      <p>Already in desktop mode? Press <kbd>ESC</kbd> to dismiss this message.</p>
-    </div>
-  </div>
 </div>
 
 <canvas id="three-canvas"></canvas>
@@ -656,13 +516,13 @@
 
   <!-- ══ VALUE PROPOSITION ══ -->
   <section class="section-wrap" id="value-prop">
-    <div class="value-panel" id="valuePanel">
+    <div class="value-panel minimized" id="valuePanel">
       <div class="value-panel-header" onclick="const p=document.getElementById('valuePanel');p.classList.toggle('minimized');this.querySelector('.value-panel-toggle').textContent=p.classList.contains('minimized')?'+':'−';">
         <div>
           <h2 class="section-heading" style="margin-bottom:0.4rem;">Creation From Your Imagination</h2>
           <p class="section-desc" style="margin-bottom:0;">Pushing the limits of Software Innovation</p>
         </div>
-        <button type="button" class="value-panel-toggle" aria-label="minimize">−</button>
+        <button type="button" class="value-panel-toggle" aria-label="expand">+</button>
       </div>
       <div class="value-panel-body">
         <div class="services-grid">
@@ -1346,116 +1206,8 @@ import * as THREE from 'three';
 document.addEventListener('keydown', e => {
   if(e.key==='Escape') {
     window.closeModal && window.closeModal();
-    window.closeDesktopModeModal && window.closeDesktopModeModal();
   }
 });
-
-// Desktop mode modal functions - attach to window for inline onclick access
-window.enterDesktopMode = function() {
-  // Try to request fullscreen for desktop-like experience
-  const elem = document.documentElement;
-  
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen().catch(err => {
-      console.log('Fullscreen denied:', err);
-      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
-    });
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen().catch(err => {
-      console.log('Fullscreen denied:', err);
-      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
-    });
-  } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen().catch(err => {
-      console.log('Fullscreen denied:', err);
-      showDesktopModeMessage('Fullscreen not supported. Try rotating your device to landscape mode for the best experience.');
-    });
-  } else {
-    // Fullscreen API not available
-    showDesktopModeMessage('For the best experience, please view this site on a desktop or laptop computer in landscape mode.');
-  }
-
-  closeDesktopModeModal();
-};
-
-window.showDesktopModeMessage = function(message) {
-  // Create a temporary toast notification
-  const toast = document.createElement('div');
-  toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(6, 5, 18, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    color: var(--white);
-    font-size: 0.85rem;
-    max-width: 90%;
-    z-index: 3000;
-    animation: slideUp 0.3s ease;
-  `;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.animation = 'slideDown 0.3s ease reverse';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
-};
-
-window.stayMobile = function() {
-  closeDesktopModeModal();
-};
-
-window.closeDesktopModeModal = function() {
-  const modal = document.getElementById('desktopModeModal');
-  if (modal) {
-    modal.classList.remove('open');
-    localStorage.setItem('desktopModeDismissed', 'true');
-  }
-};
-
-window.closeDesktopModeModalOnBackdrop = function(event) {
-  // Only close if clicking directly on the modal backdrop (not on the content)
-  if (event.target === event.currentTarget) {
-    closeDesktopModeModal();
-  }
-};
-
-window.showDesktopModeModal = function() {
-  // Only show on mobile devices (screen width < 768px)
-  if (window.innerWidth < 768) {
-    // Check if user has dismissed before
-    const dismissed = localStorage.getItem('desktopModeDismissed');
-    if (!dismissed) {
-      const modal = document.getElementById('desktopModeModal');
-      if (modal) {
-        modal.classList.add('open');
-      }
-    }
-  }
-};
-
-// Show desktop mode modal after a short delay on mobile
-setTimeout(showDesktopModeModal, 1500);
-
-// Add CSS animations for toast
-const toastStyle = document.createElement('style');
-toastStyle.textContent = `
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-  @keyframes slideDown {
-    from { opacity: 1; transform: translateX(-50%) translateY(0); }
-    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  }
-`;
-document.head.appendChild(toastStyle);
 
 (function() {
   const co = new IntersectionObserver((es) => {
