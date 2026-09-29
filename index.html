@@ -902,7 +902,7 @@
 <script type="module">
 import * as THREE from 'three';
 
-(function() {
+try { (function() {
   const canvas = document.getElementById('three-canvas');
   const scene  = new THREE.Scene();
   scene.background = null;
@@ -1200,7 +1200,14 @@ import * as THREE from 'three';
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   });
-})();
+})(); } catch (e) {
+  console.warn('3D background unavailable:', e.message);
+  document.getElementById('three-canvas')?.remove();
+}
+</script>
+
+<!-- page behaviour: kept out of the 3D module so the page works without WebGL -->
+<script>
 
 // observers
 document.addEventListener('keydown', e => {
